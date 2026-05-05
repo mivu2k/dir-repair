@@ -14,8 +14,10 @@ return new class extends Migration
         });
 
         Schema::table('diagnoses', function (Blueprint $table) {
-            // Remove the unique constraint on repair_job_id (allow multiple diagnoses per job)
+            // Drop FK, drop unique, restore FK to allow multiple diagnoses per job in MySQL
+            $table->dropForeign(['repair_job_id']);
             $table->dropUnique(['repair_job_id']);
+            $table->foreign('repair_job_id')->references('id')->on('repair_jobs');
         });
 
         Schema::table('diagnoses', function (Blueprint $table) {
