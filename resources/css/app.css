@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary: #0f172a;
+    --border: #e2e8f0;
+    --bg-main: #ffffff;
+}
+
+body {
+    @apply antialiased font-sans bg-white text-slate-900;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+@layer components {
+    .input-field {
+        @apply w-full bg-white border border-slate-200 rounded px-2.5 py-2 text-[11px] font-bold text-slate-900 
+               focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 transition-all outline-none 
+               placeholder:text-slate-300 placeholder:font-normal;
+    }
+
+    .btn-primary {
+        @apply bg-slate-900 hover:bg-black text-white px-3 py-2 rounded text-[10px] font-black uppercase tracking-widest 
+               transition-all active:scale-[0.98] flex items-center justify-center gap-2;
+    }
+
+    .btn-secondary {
+        @apply bg-white border border-slate-200 hover:border-slate-900 text-slate-600 hover:text-slate-900 px-3 py-2 rounded 
+               text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2;
+    }
+
+    /* Horizontal scroll for mobile tables */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Custom Scrollbar for High Density */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    @apply bg-slate-50;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full hover:bg-slate-400;
+}
+
+/* Animations */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 640px) {
+    .sidebar-collapsed {
+        @apply translate-x-[-100%];
+    }
+    
+    .main-content {
+        @apply ml-0 !important;
+    }
+}
