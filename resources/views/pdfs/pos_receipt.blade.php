@@ -38,26 +38,26 @@
         
         .info-section { margin: 6pt 0; }
         .info-row { display: block; margin-bottom: 1pt; font-size: 10pt; }
-        .label { font-weight: normal; color: #555; }
-        .value { font-weight: bold; float: right; }
+        .label { font-weight: bold; color: #000; }
+        .value { font-weight: bold; float: right; color: #000; }
         
         .job-card { 
-            border: 0.5pt solid #ccc; 
+            border: 1pt solid #000; 
             padding: 4pt; 
             margin: 4pt 0; 
         }
         
         .items-table { width: 100%; border-collapse: collapse; margin: 6pt 0; }
-        .items-table th { text-align: left; border-bottom: 1pt solid #000; padding: 2pt 0; font-size: 9pt; }
-        .items-table td { padding: 4pt 0; vertical-align: top; border-bottom: 0.5pt solid #eee; font-size: 10pt; }
+        .items-table th { text-align: left; border-bottom: 1.5pt solid #000; padding: 2pt 0; font-size: 9pt; font-weight: bold; }
+        .items-table td { padding: 4pt 0; vertical-align: top; border-bottom: 1pt dashed #000; font-size: 10pt; font-weight: bold; }
         
-        .total-section { margin-top: 4pt; border-top: 1pt solid #000; padding-top: 4pt; }
-        .total-row { display: block; padding: 1pt 0; font-size: 11pt; }
-        .grand-total { font-size: 14pt; margin-top: 2pt; border-top: 0.5pt solid #000; padding-top: 4pt; }
+        .total-section { margin-top: 4pt; border-top: 1.5pt solid #000; padding-top: 4pt; }
+        .total-row { display: block; padding: 1pt 0; font-size: 11pt; font-weight: bold; }
+        .grand-total { font-size: 14pt; margin-top: 2pt; border-top: 1pt solid #000; padding-top: 4pt; font-weight: 900; }
         
-        .footer { margin-top: 12pt; font-size: 8pt; border-top: 1pt dashed #000; padding-top: 6pt; }
+        .footer { margin-top: 12pt; font-size: 8pt; border-top: 1.5pt dashed #000; padding-top: 6pt; font-weight: bold; }
         .qr-placeholder { margin: 10pt 0; text-align: center; }
-        .job-no-footer { font-size: 14pt; letter-spacing: 3pt; font-weight: 900; margin-top: 4pt; }
+        .job-no-footer { font-size: 14pt; letter-spacing: 3pt; font-weight: 900; margin-top: 4pt; color: #000; }
         
         .clearfix::after { content: ""; clear: both; display: table; }
         .mono { font-family: monospace; }
@@ -113,7 +113,7 @@
                 <tr>
                     <td>
                         <span class="bold">{{ $item->description }}</span><br>
-                        <span style="font-size: 8pt; color: #666;">QTY: {{ $item->quantity }} | {{ strtoupper($item->item_type) }}</span>
+                        <span style="font-size: 8pt; color: #000; font-weight: bold;">QTY: {{ $item->quantity }} | {{ strtoupper($item->item_type) }}</span>
                     </td>
                     <td class="text-right bold">{{ number_format($item->line_total, 0) }}</td>
                 </tr>
@@ -138,7 +138,7 @@
             <div class="job-card">
                 <div class="bold" style="font-size: 11pt;">{{ $job->job_number }}</div>
                 <div class="uppercase bold" style="font-size: 9pt;">{{ $job->brand }} {{ $job->device_name }}</div>
-                <div style="font-size: 8pt; color: #444;">
+                <div style="font-size: 8pt; color: #000; font-weight: bold;">
                     MOD: {{ $job->model ?: '---' }} | SN: <span class="mono">{{ $job->serial_number ?: '---' }}</span>
                 </div>
             </div>
@@ -160,8 +160,8 @@
 
         <div class="device-section" style="margin: 4pt 0;">
             <div class="bold uppercase" style="font-size: 12pt;">{{ $job->brand }} {{ $job->device_name }}</div>
-            <div style="font-size: 9pt;">MODEL: {{ $job->model ?: '---' }} | SN: {{ $job->serial_number ?: '---' }}</div>
-            <div style="margin-top: 4pt; font-size: 10pt; background: #f9f9f9; padding: 4pt;">
+            <div style="font-size: 9pt; font-weight: bold;">MODEL: {{ $job->model ?: '---' }} | SN: {{ $job->serial_number ?: '---' }}</div>
+            <div style="margin-top: 4pt; font-size: 10pt; background: #fff; padding: 4pt; border: 1pt solid #000;">
                 <span class="bold">REPORTED ISSUE:</span><br>
                 {{ $job->issue_description }}
             </div>
@@ -180,7 +180,7 @@
                 <tr>
                     <td>
                         <span class="bold">{{ $item->description }}</span><br>
-                        <span style="font-size: 8pt; color: #666;">QTY: {{ $item->quantity }} | {{ strtoupper($item->item_type) }}</span>
+                        <span style="font-size: 8pt; color: #000; font-weight: bold;">QTY: {{ $item->quantity }} | {{ strtoupper($item->item_type) }}</span>
                     </td>
                     <td class="text-right bold">{{ number_format($item->line_total, 0) }}</td>
                 </tr>
@@ -251,7 +251,7 @@
             {{ $footerNo }}
         </div>
         
-        <div style="font-size: 8pt; margin-top: 15pt; opacity: 0.6;">
+        <div style="font-size: 8pt; margin-top: 15pt; color: #000; font-weight: bold;">
             {{ now()->format('Y') }} &copy; {{ $settings['company_name'] ?? 'MEI OPS' }}
         </div>
     </div>

@@ -135,7 +135,7 @@ class PdfExportController extends Controller
         
         $pdf = Pdf::loadView('pdfs.stickers', [
             'jobs' => $intake->repairJobs
-        ])->setPaper([0, 0, 141, 85]); 
+        ])->setPaper([0, 0, 216, 144]); 
 
         return $pdf->stream("stickers-{$intake->intake_number}.pdf");
     }
@@ -146,7 +146,7 @@ class PdfExportController extends Controller
         
         $pdf = Pdf::loadView('pdfs.stickers', [
             'jobs' => collect([$job])
-        ])->setPaper([0, 0, 141, 85]); 
+        ])->setPaper([0, 0, 216, 144]); 
 
         return $pdf->stream("sticker-{$job->job_number}.pdf");
     }

@@ -5,20 +5,20 @@
     <style>
         @page { 
             margin: 0; 
-            size: 141pt 85pt;
+            size: 216pt 144pt;
         }
         html, body {
             margin: 0;
             padding: 0;
-            width: 141pt;
-            height: 85pt;
+            width: 216pt;
+            height: 144pt;
             font-family: 'DejaVu Sans', sans-serif;
             background: white;
             line-height: 1;
         }
         .sticker-wrapper {
-            width: 141pt;
-            height: 85pt;
+            width: 216pt;
+            height: 144pt;
             page-break-after: always;
             overflow: hidden;
             position: relative;
@@ -27,59 +27,60 @@
             page-break-after: avoid;
         }
         .container {
-            padding: 4pt;
+            padding: 6pt;
         }
         .qr-col {
             float: left;
-            width: 45pt;
+            width: 70pt;
             text-align: center;
         }
         .qr-col img {
-            width: 38pt;
-            height: 38pt;
+            width: 60pt;
+            height: 60pt;
         }
         .qr-id {
-            font-size: 5pt;
-            margin-top: 1pt;
+            font-size: 8pt;
+            margin-top: 2pt;
             font-weight: bold;
         }
         .info-col {
             float: left;
-            width: 88pt;
-            padding-left: 2pt;
+            width: 130pt;
+            padding-left: 4pt;
         }
         .header {
-            font-size: 10pt;
+            font-size: 14pt;
             font-weight: bold;
-            border-bottom: 0.5pt solid #000;
-            margin-bottom: 2pt;
+            border-bottom: 1pt solid #000;
+            margin-bottom: 4pt;
+            padding-bottom: 2pt;
         }
         .line {
-            font-size: 7pt;
-            margin-bottom: 1pt;
+            font-size: 10pt;
+            margin-bottom: 2pt;
             white-space: nowrap;
             overflow: hidden;
         }
         .line strong {
-            font-size: 5.5pt;
-            color: #555;
+            font-size: 8pt;
+            color: #333;
             text-transform: uppercase;
         }
         .customer {
-            margin-top: 2pt;
-            font-size: 7.5pt;
+            margin-top: 4pt;
+            font-size: 11pt;
             font-weight: bold;
             background: #000;
             color: #fff;
-            padding: 1pt 2pt;
+            padding: 2pt 4pt;
             text-transform: uppercase;
         }
         .footer {
             position: absolute;
-            bottom: 2pt;
-            right: 4pt;
-            font-size: 5.5pt;
-            color: #999;
+            bottom: 4pt;
+            right: 6pt;
+            font-size: 8pt;
+            color: #666;
         }
         .clearfix::after {
             content: "";
