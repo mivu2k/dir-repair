@@ -9,8 +9,8 @@
             font-family: 'Helvetica', 'Arial', sans-serif; 
             font-size: 11pt; 
             line-height: 1.2; 
-            width: 72mm; 
-            padding: 4mm;
+            width: 76mm; 
+            padding: 2mm;
             margin: 0;
             color: #000;
             background: #fff;

@@ -61,7 +61,7 @@ class PdfExportController extends Controller
             $pdf = Pdf::loadView('pdfs.pos_receipt', [
                 'intake' => $intake,
                 'type' => $type
-            ])->setPaper([0, 0, 226, 1500], 'portrait'); 
+            ])->setPaper([0, 0, 226.77, 1500], 'portrait'); 
             return $pdf->stream("INT-{$intake->intake_number}.pdf");
         }
 
@@ -70,7 +70,7 @@ class PdfExportController extends Controller
             $pdf = Pdf::loadView('pdfs.pos_receipt', [
                 'quotation' => $quotation,
                 'type' => 'quotation'
-            ])->setPaper([0, 0, 226, 1500], 'portrait'); 
+            ])->setPaper([0, 0, 226.77, 1500], 'portrait'); 
             return $pdf->stream("QT-{$quotation->quotation_number}.pdf");
         }
 
@@ -79,7 +79,7 @@ class PdfExportController extends Controller
         $pdf = Pdf::loadView('pdfs.pos_receipt', [
             'job' => $job,
             'type' => $type
-        ])->setPaper([0, 0, 226, 1200], 'portrait'); 
+        ])->setPaper([0, 0, 226.77, 1200], 'portrait'); 
 
         return $pdf->stream("POS-{$job->job_number}.pdf");
     }
