@@ -95,9 +95,9 @@
                 <div class="qr-col">
                     @php
                         $qrData = url('/jobs/' . $job->job_number);
-                        $qrCode = base64_encode(QrCode::format('png')->size(100)->margin(0)->generate($qrData));
+                        $qrCode = base64_encode(QrCode::format('svg')->size(100)->margin(0)->generate($qrData));
                     @endphp
-                    <img src="data:image/png;base64,{{ $qrCode }}" alt="QR">
+                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR">
                     <div class="qr-id">{{ $job->job_number }}</div>
                 </div>
                 

@@ -242,9 +242,9 @@
                     $qrData = url('/jobs/' . $job->job_number);
                     $footerNo = $job->job_number;
                 }
-                $qrCode = base64_encode(QrCode::format('png')->size(200)->margin(0)->errorCorrection('H')->generate($qrData));
+                $qrCode = base64_encode(QrCode::format('svg')->size(200)->margin(0)->errorCorrection('H')->generate($qrData));
             @endphp
-            <img src="data:image/png;base64,{{ $qrCode }}" alt="QR" style="width: 100pt; height: 100pt;">
+            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR" style="width: 100pt; height: 100pt;">
         </div>
         
         <div class="job-no-footer">
