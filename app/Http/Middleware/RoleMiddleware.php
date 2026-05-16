@@ -26,14 +26,9 @@ class RoleMiddleware
             return $next($request);
         }
 
-        // If the request requires a specific role (e.g. 'admin' for delete)
-        if (in_array('admin', $roles) && $userRole !== 'admin') {
-            abort(403, 'Administrative privileges required for this action.');
-        }
-
-        // Manager check
-        if (in_array('manager', $roles) && !in_array($userRole, ['admin', 'manager'])) {
-            abort(403, 'Management privileges required for this access.');
+        // General whitelist check: if roles are specified, the user must have one of them
+        if (!empty($roles) && !in_array($userRole, $roles)) {
+            abort(403, 'You do not have permission to access this module.');
         }
 
         // Specific exclusions for technicians

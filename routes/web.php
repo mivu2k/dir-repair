@@ -36,9 +36,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/settings/accessories/{accessory}', [\App\Http\Controllers\Admin\SettingController::class, 'destroyAccessory'])->name('admin.settings.accessories.destroy');
     });
 
-    // Operational Core (Protected by RoleMiddleware for destructive actions)
-    Route::middleware('role')->group(function () {
-        // Customers
+    // Customers
+    Route::middleware('role:manager,sales,accountant,store,technician,supervisor')->group(function () {
         Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'index'])->name('customers.index');
         Route::get('/customers/create', [\App\Http\Controllers\CustomerController::class, 'create'])->name('customers.create');
         Route::post('/customers', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customers.store');
@@ -46,8 +45,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/customers/{customer}/edit', [\App\Http\Controllers\CustomerController::class, 'edit'])->name('customers.edit');
         Route::put('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customers.update');
         Route::delete('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->middleware('role:admin')->name('customers.destroy');
+    });
 
-        // Intakes
+    // Intakes
+    Route::middleware('role:manager,sales,technician,supervisor')->group(function () {
         Route::get('/intakes', [\App\Http\Controllers\IntakeController::class, 'index'])->name('intakes.index');
         Route::get('/intakes/create', [\App\Http\Controllers\IntakeController::class, 'create'])->name('intakes.create');
         Route::post('/intakes', [\App\Http\Controllers\IntakeController::class, 'store'])->name('intakes.store');
@@ -55,8 +56,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/intakes/{intake}', [\App\Http\Controllers\IntakeController::class, 'update'])->name('intakes.update');
         Route::delete('/intakes/{intake}', [\App\Http\Controllers\IntakeController::class, 'destroy'])->middleware('role:admin')->name('intakes.destroy');
         Route::post('/intakes/{intake}/status', [\App\Http\Controllers\IntakeController::class, 'updateStatus'])->name('intakes.status.update');
+    });
 
-        // Jobs
+    // Jobs
+    Route::middleware('role:manager,store,technician,supervisor')->group(function () {
         Route::get('/jobs', [\App\Http\Controllers\RepairJobController::class, 'index'])->name('jobs.index');
         Route::get('/jobs/{job_number}', [\App\Http\Controllers\RepairJobController::class, 'show'])->name('jobs.show');
         Route::get('/jobs/{job}/edit', [\App\Http\Controllers\RepairJobController::class, 'edit'])->name('jobs.edit');
@@ -67,14 +70,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/jobs/{job}/diagnose', [\App\Http\Controllers\DiagnosisController::class, 'store'])->name('jobs.diagnose');
         Route::patch('/diagnoses/{diagnosis}', [\App\Http\Controllers\DiagnosisController::class, 'update'])->name('diagnoses.update');
         Route::delete('/diagnoses/{diagnosis}', [\App\Http\Controllers\DiagnosisController::class, 'destroy'])->name('diagnoses.destroy');
+    });
 
-        // Inventory
+    // Inventory
+    Route::middleware('role:manager,store,supervisor')->group(function () {
         Route::resource('parts', App\Http\Controllers\PartController::class);
         Route::delete('/parts/{part}', [\App\Http\Controllers\PartController::class, 'destroy'])->middleware('role:admin')->name('parts.destroy');
     });
 
-    // Financial & Analytical (Manager/Admin Only)
-    Route::middleware('role:manager')->group(function () {
+    // Financial & Analytical
+    Route::middleware('role:manager,accountant,supervisor')->group(function () {
         Route::get('/quotations', [\App\Http\Controllers\QuotationController::class, 'index'])->name('quotations.index');
         Route::get('/quotations/create', [\App\Http\Controllers\QuotationController::class, 'create'])->name('quotations.create');
         Route::post('/quotations', [\App\Http\Controllers\QuotationController::class, 'store'])->name('quotations.store');

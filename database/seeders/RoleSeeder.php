@@ -13,20 +13,40 @@ class RoleSeeder extends Seeder {
             'view financial data', 'create quotation', 'approve quotation', 'create sales order',
             'delete records', 'manage users', 'view reports', 'change own jobs only'
         ];
-        foreach ($permissions as $p) { Permission::create(['name' => $p]); }
+        foreach ($permissions as $p) { Permission::firstOrCreate(['name' => $p]); }
 
-        $admin = Role::create(['name' => 'admin']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);
         $admin->givePermissionTo(Permission::all()->reject(function($p){ return $p->name === 'change own jobs only'; }));
 
-        $manager = Role::create(['name' => 'manager']);
+        $manager = Role::firstOrCreate(['name' => 'manager']);
         $manager->givePermissionTo([
             'create intake/job', 'view all jobs', 'update job status', 'add diagnosis',
             'view financial data', 'create quotation', 'approve quotation', 'create sales order', 'view reports'
         ]);
 
-        $tech = Role::create(['name' => 'technician']);
+        $tech = Role::firstOrCreate(['name' => 'technician']);
         $tech->givePermissionTo([
             'create intake/job', 'view all jobs', 'update job status', 'add diagnosis', 'change own jobs only'
+        ]);
+
+        $supervisor = Role::firstOrCreate(['name' => 'supervisor']);
+        $supervisor->givePermissionTo([
+            'view all jobs', 'view reports'
+        ]);
+
+        $sales = Role::firstOrCreate(['name' => 'sales']);
+        $sales->givePermissionTo([
+            'create intake/job'
+        ]);
+
+        $accountant = Role::firstOrCreate(['name' => 'accountant']);
+        $accountant->givePermissionTo([
+            'view financial data', 'create quotation', 'approve quotation', 'create sales order', 'view reports'
+        ]);
+
+        $store = Role::firstOrCreate(['name' => 'store']);
+        $store->givePermissionTo([
+            'view all jobs'
         ]);
     }
 }

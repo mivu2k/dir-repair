@@ -14,7 +14,16 @@ const role = computed(() => user?.roles?.[0]?.name || user?.role || 'staff');
 const isAdmin = computed(() => role.value === 'admin');
 const isManager = computed(() => role.value === 'manager');
 const isTechnician = computed(() => role.value === 'technician');
-const canAccessFinancials = computed(() => isAdmin.value || isManager.value);
+const isSupervisor = computed(() => role.value === 'supervisor');
+const isSales = computed(() => role.value === 'sales');
+const isAccountant = computed(() => role.value === 'accountant');
+const isStore = computed(() => role.value === 'store');
+
+const canAccessFinancials = computed(() => ['admin', 'manager', 'accountant', 'supervisor'].includes(role.value));
+const canAccessIntakes = computed(() => ['admin', 'manager', 'sales', 'technician', 'supervisor'].includes(role.value));
+const canAccessJobs = computed(() => ['admin', 'manager', 'store', 'technician', 'supervisor'].includes(role.value));
+const canAccessInventory = computed(() => ['admin', 'manager', 'store', 'supervisor'].includes(role.value));
+const canAccessCustomers = computed(() => ['admin', 'manager', 'sales', 'accountant', 'store', 'technician', 'supervisor'].includes(role.value));
 
 const handleResize = () => {
     isMobile.value = window.innerWidth < 768;
@@ -58,11 +67,11 @@ onUnmounted(() => {
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         Dashboard
                     </Link>
-                    <Link :href="route('intakes.index')" class="nav-link" :class="{ 'active': route().current('intakes.*') }">
+                    <Link v-if="canAccessIntakes" :href="route('intakes.index')" class="nav-link" :class="{ 'active': route().current('intakes.*') }">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         Intakes
                     </Link>
-                    <Link :href="route('jobs.index')" class="nav-link" :class="{ 'active': route().current('jobs.*') }">
+                    <Link v-if="canAccessJobs" :href="route('jobs.index')" class="nav-link" :class="{ 'active': route().current('jobs.*') }">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Repair Jobs
                     </Link>
@@ -70,11 +79,11 @@ onUnmounted(() => {
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Quotations
                     </Link>
-                    <Link :href="route('customers.index')" class="nav-link" :class="{ 'active': route().current('customers.*') }">
+                    <Link v-if="canAccessCustomers" :href="route('customers.index')" class="nav-link" :class="{ 'active': route().current('customers.*') }">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         Customers
                     </Link>
-                    <Link :href="route('parts.index')" class="nav-link" :class="{ 'active': route().current('parts.*') }">
+                    <Link v-if="canAccessInventory" :href="route('parts.index')" class="nav-link" :class="{ 'active': route().current('parts.*') }">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                         Inventory
                     </Link>
