@@ -24,6 +24,8 @@ const canAccessIntakes = computed(() => ['admin', 'manager', 'sales', 'technicia
 const canAccessJobs = computed(() => ['admin', 'manager', 'store', 'technician', 'supervisor'].includes(role.value));
 const canAccessInventory = computed(() => ['admin', 'manager', 'store', 'supervisor'].includes(role.value));
 const canAccessCustomers = computed(() => ['admin', 'manager', 'sales', 'accountant', 'store', 'technician', 'supervisor'].includes(role.value));
+const canAccessDemo = computed(() => ['admin', 'manager', 'sales', 'store', 'supervisor'].includes(role.value));
+const canAccessGatePass = computed(() => ['admin', 'manager', 'store', 'supervisor'].includes(role.value));
 
 const handleResize = () => {
     isMobile.value = window.innerWidth < 768;
@@ -86,6 +88,14 @@ onUnmounted(() => {
                     <Link v-if="canAccessInventory" :href="route('parts.index')" class="nav-link" :class="{ 'active': route().current('parts.*') }">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                         Inventory
+                    </Link>
+                    <Link v-if="canAccessDemo" :href="route('demo-issuances.index')" class="nav-link" :class="{ 'active': route().current('demo-issuances.*') }">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        Demo Goods
+                    </Link>
+                    <Link v-if="canAccessGatePass" :href="route('gate-passes.index')" class="nav-link" :class="{ 'active': route().current('gate-passes.*') }">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Gate Passes
                     </Link>
                     <Link v-if="canAccessFinancials" :href="route('reports.index')" class="nav-link" :class="{ 'active': route().current('reports.*') }">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>

@@ -78,6 +78,20 @@ Route::middleware('auth')->group(function () {
         Route::delete('/parts/{part}', [\App\Http\Controllers\PartController::class, 'destroy'])->middleware('role:admin')->name('parts.destroy');
     });
 
+    // Demo Issuances
+    Route::middleware('role:manager,sales,store,supervisor')->group(function () {
+        Route::get('/demo-issuances', [\App\Http\Controllers\DemoIssuanceController::class, 'index'])->name('demo-issuances.index');
+        Route::post('/demo-issuances', [\App\Http\Controllers\DemoIssuanceController::class, 'store'])->name('demo-issuances.store');
+        Route::post('/demo-issuances/{demoIssuance}/return', [\App\Http\Controllers\DemoIssuanceController::class, 'markReturned'])->name('demo-issuances.return');
+    });
+
+    // Gate Passes
+    Route::middleware('role:manager,store,supervisor')->group(function () {
+        Route::get('/gate-passes', [\App\Http\Controllers\GatePassController::class, 'index'])->name('gate-passes.index');
+        Route::post('/gate-passes', [\App\Http\Controllers\GatePassController::class, 'store'])->name('gate-passes.store');
+        Route::get('/gate-passes/{gatePass}/pdf', [\App\Http\Controllers\GatePassController::class, 'pdf'])->name('gate-passes.pdf');
+    });
+
     // Financial & Analytical
     Route::middleware('role:manager,accountant,supervisor')->group(function () {
         Route::get('/quotations', [\App\Http\Controllers\QuotationController::class, 'index'])->name('quotations.index');
