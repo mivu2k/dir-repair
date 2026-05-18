@@ -174,7 +174,7 @@
                     </td>
                     <td class="text-center">{{ $item->quantity }}</td>
                     <td class="text-right">{{ $settings['currency_symbol'] ?? 'PKR' }} {{ number_format($item->unit_price, 0) }}</td>
-                    <td class="text-right bold">{{ $settings['currency_symbol'] ?? 'PKR' }} {{ number_format($item->total_price, 0) }}</td>
+                    <td class="text-right bold">{{ $settings['currency_symbol'] ?? 'PKR' }} {{ number_format($item->line_total, 0) }}</td>
                 </tr>
                 @endforeach
             @endforeach

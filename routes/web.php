@@ -34,6 +34,11 @@ Route::middleware('auth')->group(function () {
         
         Route::post('/admin/settings/accessories', [\App\Http\Controllers\Admin\SettingController::class, 'storeAccessory'])->name('admin.settings.accessories.store');
         Route::delete('/admin/settings/accessories/{accessory}', [\App\Http\Controllers\Admin\SettingController::class, 'destroyAccessory'])->name('admin.settings.accessories.destroy');
+        
+        Route::post('/admin/settings/brands', [\App\Http\Controllers\Admin\SettingController::class, 'storeBrand'])->name('admin.settings.brands.store');
+        Route::delete('/admin/settings/brands/{brand}', [\App\Http\Controllers\Admin\SettingController::class, 'destroyBrand'])->name('admin.settings.brands.destroy');
+        Route::post('/admin/settings/devices', [\App\Http\Controllers\Admin\SettingController::class, 'storeDevice'])->name('admin.settings.devices.store');
+        Route::delete('/admin/settings/devices/{device}', [\App\Http\Controllers\Admin\SettingController::class, 'destroyDevice'])->name('admin.settings.devices.destroy');
     });
 
     // Customers
@@ -79,21 +84,26 @@ Route::middleware('auth')->group(function () {
     });
 
     // Demo Issuances
-    Route::middleware('role:manager,sales,store,supervisor')->group(function () {
+    Route::middleware('role:admin,manager,sales,store,supervisor')->group(function () {
         Route::get('/demo-issuances', [\App\Http\Controllers\DemoIssuanceController::class, 'index'])->name('demo-issuances.index');
         Route::post('/demo-issuances', [\App\Http\Controllers\DemoIssuanceController::class, 'store'])->name('demo-issuances.store');
+        Route::put('/demo-issuances/{demoIssuance}', [\App\Http\Controllers\DemoIssuanceController::class, 'update'])->name('demo-issuances.update');
+        Route::delete('/demo-issuances/{demoIssuance}', [\App\Http\Controllers\DemoIssuanceController::class, 'destroy'])->name('demo-issuances.destroy');
         Route::post('/demo-issuances/{demoIssuance}/return', [\App\Http\Controllers\DemoIssuanceController::class, 'markReturned'])->name('demo-issuances.return');
+        Route::get('/demo-issuances/{demoIssuance}/pdf/{variant?}', [\App\Http\Controllers\DemoIssuanceController::class, 'pdf'])->name('demo-issuances.pdf');
     });
 
     // Gate Passes
-    Route::middleware('role:manager,store,supervisor')->group(function () {
+    Route::middleware('role:admin,manager,store,supervisor')->group(function () {
         Route::get('/gate-passes', [\App\Http\Controllers\GatePassController::class, 'index'])->name('gate-passes.index');
         Route::post('/gate-passes', [\App\Http\Controllers\GatePassController::class, 'store'])->name('gate-passes.store');
-        Route::get('/gate-passes/{gatePass}/pdf', [\App\Http\Controllers\GatePassController::class, 'pdf'])->name('gate-passes.pdf');
+        Route::put('/gate-passes/{gatePass}', [\App\Http\Controllers\GatePassController::class, 'update'])->name('gate-passes.update');
+        Route::delete('/gate-passes/{gatePass}', [\App\Http\Controllers\GatePassController::class, 'destroy'])->name('gate-passes.destroy');
+        Route::get('/gate-passes/{gatePass}/pdf/{variant?}', [\App\Http\Controllers\GatePassController::class, 'pdf'])->name('gate-passes.pdf');
     });
 
     // Financial & Analytical
-    Route::middleware('role:manager,accountant,supervisor')->group(function () {
+    Route::middleware('role:admin,manager,accountant,supervisor')->group(function () {
         Route::get('/quotations', [\App\Http\Controllers\QuotationController::class, 'index'])->name('quotations.index');
         Route::get('/quotations/create', [\App\Http\Controllers\QuotationController::class, 'create'])->name('quotations.create');
         Route::post('/quotations', [\App\Http\Controllers\QuotationController::class, 'store'])->name('quotations.store');
@@ -101,8 +111,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/quotations/{quotation}', [\App\Http\Controllers\QuotationController::class, 'destroy'])->middleware('role:admin')->name('quotations.destroy');
         Route::post('/quotations/{quotation}/status', [\App\Http\Controllers\QuotationController::class, 'updateStatus'])->name('quotations.status');
         
+        Route::get('/tracking', [\App\Http\Controllers\TrackingController::class, 'index'])->name('tracking.index');
+        Route::get('/tracking/pdf', [\App\Http\Controllers\TrackingController::class, 'pdf'])->name('tracking.pdf');
+        Route::get('/tracking/csv', [\App\Http\Controllers\TrackingController::class, 'csv'])->name('tracking.csv');
+        
         Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-        Route::get('/reports/export', [\App\Http\Controllers\ReportController::class, 'export'])->name('reports.export');
+        Route::get('/reports/logistics', [\App\Http\Controllers\LogisticsReportController::class, 'index'])->name('reports.logistics');
+        Route::get('/reports/pdf', [\App\Http\Controllers\ReportController::class, 'pdf'])->name('reports.pdf');
+        Route::get('/reports/excel', [\App\Http\Controllers\ReportController::class, 'excel'])->name('reports.excel');
         
         Route::get('/sales-orders', [\App\Http\Controllers\SalesOrderController::class, 'index'])->name('sales-orders.index');
         Route::post('/sales-orders', [\App\Http\Controllers\SalesOrderController::class, 'store'])->name('sales-orders.store');

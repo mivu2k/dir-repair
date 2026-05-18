@@ -7,6 +7,8 @@ const props = defineProps({
     customers: Array,
     symptoms: Object,
     accessories: Array,
+    brands: Array,
+    devices: Array,
 });
 
 const isNewCustomer = ref(false);
@@ -144,11 +146,17 @@ const submit = () => {
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                         <div class="space-y-1">
                             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Brand / Manufacturer</label>
-                            <input v-model="device.brand" type="text" class="input-field py-1.5" required>
+                            <input v-model="device.brand" type="text" list="brand-list" class="input-field py-1.5" required>
+                            <datalist id="brand-list">
+                                <option v-for="brand in brands" :key="brand.id" :value="brand.name" />
+                            </datalist>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Device Identity</label>
-                            <input v-model="device.device_name" type="text" class="input-field py-1.5" required>
+                            <input v-model="device.device_name" type="text" list="device-list" class="input-field py-1.5" required>
+                            <datalist id="device-list">
+                                <option v-for="dev in devices" :key="dev.id" :value="dev.name" />
+                            </datalist>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Model Ref</label>

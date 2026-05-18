@@ -16,18 +16,18 @@
         .header-left { display: table-cell; vertical-align: top; }
         .header-right { display: table-cell; vertical-align: top; text-align: right; }
         
-        .company-name { font-size: 20px; font-weight: 900; }
-        .company-detail { font-size: 8px; color: #52525b; margin-top: 3px; }
+        .company-name { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+        .company-detail { font-size: 8px; color: #52525b; margin-top: 3px; font-weight: 500; }
         
-        .doc-title { font-size: 24px; font-weight: 900; color: #18181b; }
-        .doc-subtitle { font-size: 12px; font-weight: 700; color: #52525b; margin-top: 5px; }
+        .doc-title { font-size: 24px; font-weight: 700; color: #18181b; letter-spacing: 1px; }
+        .doc-subtitle { font-size: 12px; font-weight: 500; color: #52525b; margin-top: 5px; }
 
         .group-section { margin-bottom: 25px; page-break-inside: avoid; }
-        .group-header { background: #f4f4f5; padding: 8px 12px; border-left: 4px solid #18181b; margin-bottom: 10px; }
-        .group-title { font-size: 11px; font-weight: 900; color: #18181b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .group-header { background: #f8fafc; padding: 8px 12px; border-left: 3px solid #18181b; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
+        .group-title { font-size: 10px; font-weight: 700; color: #18181b; text-transform: uppercase; letter-spacing: 1px; }
 
         .table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        .table th { border-bottom: 1px solid #18181b; padding: 6px; text-align: left; font-size: 8px; font-weight: 700; text-transform: uppercase; }
+        .table th { border-bottom: 1.5pt solid #18181b; padding: 6px; text-align: left; font-size: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         .table td { padding: 6px; border-bottom: 1px solid #e4e4e7; vertical-align: top; }
         
         .footer { position: fixed; bottom: 20px; left: 30px; right: 30px; text-align: center; font-size: 8px; color: #a1a1aa; border-top: 1px solid #e4e4e7; padding-top: 10px; }
@@ -73,6 +73,31 @@
             <div class="doc-title">INTELLIGENCE REPORT</div>
             <div class="doc-subtitle">GROUPED BY: {{ strtoupper($groupBy ?: 'Status') }}</div>
         </div>
+    </div>
+
+    <!-- Summary Matrix -->
+    <div style="margin-bottom: 30px;">
+        <h4 style="font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: #1e40af;">Performance Summary</h4>
+        <table style="width: 50%; border-collapse: collapse; border: 1pt solid #e2e8f0;">
+            <thead>
+                <tr style="background: #f8fafc;">
+                    <th style="padding: 5px; border: 1pt solid #e2e8f0; text-align: left; font-size: 7px;">CATEGORY / GROUP</th>
+                    <th style="padding: 5px; border: 1pt solid #e2e8f0; text-align: center; font-size: 7px;">UNITS</th>
+                    <th style="padding: 5px; border: 1pt solid #e2e8f0; text-align: right; font-size: 7px;">TOTAL VALUE</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($data as $groupName => $jobs)
+                <tr>
+                    <td style="padding: 5px; border: 1pt solid #e2e8f0; font-weight: bold;">{{ $groupName ?: 'NOT SPECIFIED' }}</td>
+                    <td style="padding: 5px; border: 1pt solid #e2e8f0; text-align: center;">{{ count($jobs) }}</td>
+                    <td style="padding: 5px; border: 1pt solid #e2e8f0; text-align: right; font-weight: bold;">
+                        {{ number_format($jobs->sum(fn($j) => $j->approvedQuotation->total_amount ?? 0), 2) }}
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 
     @foreach($data as $groupName => $jobs)

@@ -14,28 +14,33 @@ class NumberGeneratorService
             
             $sequence = Sequence::where('type', $type)->lockForUpdate()->first();
             
+            $config = [
+                'intake'      => ['prefix' => 'MEI-I'],
+                'job'         => ['prefix' => 'MEI-R'],
+                'quotation'   => ['prefix' => 'MEI-Q'],
+                'sales_order' => ['prefix' => 'MEI-INV'],
+                'demo'        => ['prefix' => 'MEI-D'],
+                'gate_pass'   => ['prefix' => 'MEI-G'],
+            ];
+
+            $typeConfig = $config[$type] ?? ['prefix' => 'MEI-X'];
+            
             if (!$sequence) {
-                $prefixes = [
-                    'intake' => 'mei-r',
-                    'job' => 'mei-r',
-                    'quotation' => 'mei-r',
-                    'sales_order' => 'mei-r'
-                ];
-                $prefix = $prefixes[$type] ?? 'mei-r';
-                
                 $sequence = Sequence::create([
                     'type' => $type,
-                    'prefix' => $prefix,
+                    'prefix' => $typeConfig['prefix'],
                     'year' => $year,
                     'last_number' => 0,
                 ]);
+            } else {
+                $sequence->prefix = $typeConfig['prefix'];
             }
 
             $sequence->last_number += 1;
             $sequence->save();
 
-            // Format: PREFIX-XXXXXX (e.g., MEI-R-000001)
-            return sprintf('%s-%06d', $sequence->prefix, $sequence->last_number);
+            // All types now use 8-digit padding
+            return sprintf('%s-%08d', $sequence->prefix, $sequence->last_number);
         });
     }
 }

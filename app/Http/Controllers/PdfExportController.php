@@ -56,32 +56,35 @@ class PdfExportController extends Controller
 
     public function pos(Request $request, $id, string $type = 'intake')
     {
+        $qrData = '';
+        $footerNo = '';
+
         if ($type === 'intake_summary' || $type === 'intake_delivery') {
             $intake = \App\Models\Intake::with(['customer', 'receivedBy', 'repairJobs.salesOrder.quotation.items'])->findOrFail($id);
-            $pdf = Pdf::loadView('pdfs.pos_receipt', [
-                'intake' => $intake,
-                'type' => $type
-            ])->setPaper([0, 0, 226.77, 1500], 'portrait'); 
-            return $pdf->stream("INT-{$intake->intake_number}.pdf");
-        }
-
-        if ($type === 'quotation') {
+            $qrData = url('/intakes/' . $intake->id);
+            $footerNo = $intake->intake_number;
+            $data = ['intake' => $intake, 'type' => $type];
+        } elseif ($type === 'quotation') {
             $quotation = Quotation::with(['items', 'repairJob.customer', 'intake.customer'])->findOrFail($id);
-            $pdf = Pdf::loadView('pdfs.pos_receipt', [
-                'quotation' => $quotation,
-                'type' => 'quotation'
-            ])->setPaper([0, 0, 226.77, 1500], 'portrait'); 
-            return $pdf->stream("QT-{$quotation->quotation_number}.pdf");
+            $qrData = url('/quotations/' . $quotation->id);
+            $footerNo = $quotation->quotation_number;
+            $data = ['quotation' => $quotation, 'type' => 'quotation'];
+        } else {
+            $job = RepairJob::where('job_number', $id)->with(['customer', 'salesOrder.quotation.items'])->firstOrFail();
+            $qrData = url('/jobs/' . $job->job_number);
+            $footerNo = $job->job_number;
+            $data = ['job' => $job, 'type' => $type];
         }
 
-        $job = RepairJob::where('job_number', $id)->with(['customer', 'salesOrder.quotation.items'])->firstOrFail();
+        // Pre-generate QR Code as base64 to save time in Blade
+        $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(0)->generate($qrData));
+        $data['qrCode'] = $qrCode;
+        $data['footerNo'] = $footerNo;
 
-        $pdf = Pdf::loadView('pdfs.pos_receipt', [
-            'job' => $job,
-            'type' => $type
-        ])->setPaper([0, 0, 226.77, 1200], 'portrait'); 
+        $pdf = Pdf::loadView('pdfs.pos_receipt', $data)
+            ->setPaper([0, 0, 226.77, 1200], 'portrait'); 
 
-        return $pdf->stream("POS-{$job->job_number}.pdf");
+        return $pdf->stream("{$footerNo}.pdf");
     }
 
     public function report(Request $request)

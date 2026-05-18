@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class DemoIssuance extends Model
 {
     protected $fillable = [
-        'issuance_number', 'customer_id', 'item_name', 'serial_number', 
-        'accessories_included', 'issued_at', 'expected_return_date', 
+        'issuance_number', 'customer_id', 'items',
+        'issued_at', 'expected_return_date', 
         'returned_at', 'status', 'notes', 'issued_by', 'received_by'
     ];
     
     protected $casts = [
+        'items' => 'array',
         'issued_at' => 'datetime',
         'expected_return_date' => 'date',
         'returned_at' => 'datetime',

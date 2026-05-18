@@ -231,24 +231,13 @@
         </div>
         
         <div class="qr-placeholder">
-            @php
-                if ($type === 'intake_summary' || $type === 'intake_delivery') {
-                    $qrData = url('/intakes/' . $intake->id);
-                    $footerNo = $intake->intake_number;
-                } elseif ($type === 'quotation') {
-                    $qrData = url('/quotations/' . $quotation->id);
-                    $footerNo = $quotation->quotation_number;
-                } else {
-                    $qrData = url('/jobs/' . $job->job_number);
-                    $footerNo = $job->job_number;
-                }
-                $qrCode = base64_encode(QrCode::format('svg')->size(200)->margin(0)->errorCorrection('H')->generate($qrData));
-            @endphp
-            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR" style="width: 100pt; height: 100pt;">
+            @if(isset($qrCode))
+                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR" style="width: 80pt; height: 80pt;">
+            @endif
         </div>
         
         <div class="job-no-footer">
-            {{ $footerNo }}
+            {{ $footerNo ?? '' }}
         </div>
         
         <div style="font-size: 8pt; margin-top: 15pt; color: #000; font-weight: bold;">

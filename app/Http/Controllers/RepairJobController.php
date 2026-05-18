@@ -35,6 +35,9 @@ class RepairJobController extends Controller
             ->when($technician, function ($query, $technician) {
                 $query->where('assigned_technician_id', $technician);
             })
+            ->when($request->user()->hasPermissionTo('change own jobs only'), function ($query) {
+                $query->where('assigned_technician_id', auth()->id());
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(20)
             ->withQueryString();

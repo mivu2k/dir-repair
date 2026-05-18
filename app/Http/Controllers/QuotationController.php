@@ -182,6 +182,7 @@ class QuotationController extends Controller
                     'unit_price' => $item['unit_price'],
                     'discount' => $item['discount'] ?? 0,
                     'line_total' => ($item['quantity'] * $item['unit_price']) - ($item['discount'] ?? 0),
+                    'total_price' => ($item['quantity'] * $item['unit_price']) - ($item['discount'] ?? 0),
                 ]);
             }
 

@@ -47,6 +47,8 @@ class IntakeController extends Controller
             'initialCustomer' => $customer,
             'symptoms' => Symptom::all()->groupBy('category'),
             'accessories' => Accessory::all(),
+            'brands' => \App\Models\Brand::orderBy('name')->get(),
+            'devices' => \App\Models\Device::orderBy('name')->get(),
             'customers' => Customer::select('id', 'name', 'phone', 'email', 'organization')->get(),
         ]);
     }
