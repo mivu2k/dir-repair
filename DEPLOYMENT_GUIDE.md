@@ -52,8 +52,8 @@ Clone the repository and initialize the project components:
 
 ```bash
 cd /var/www
-git clone <your-repo-url> vb-system
-cd vb-system
+git clone <your-repo-url> mei
+cd mei
 
 # Set Production Permissions
 sudo chown -R www-data:www-data storage bootstrap/cache
@@ -108,7 +108,7 @@ php artisan storage:link
 server {
     listen 80;
     server_name your-app-domain.com;
-    root /var/www/vb-system/public;
+    root /var/www/mei/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -150,13 +150,13 @@ Configure Supervisor to handle the queue for report generation:
 ```ini
 [program:mei-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/vb-system/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/mei/artisan queue:work --sleep=3 --tries=3 --max-time=3600
 autostart=true
 autorestart=true
 user=www-data
 numprocs=2
 redirect_stderr=true
-stdout_logfile=/var/www/vb-system/storage/logs/worker.log
+stdout_logfile=/var/www/mei/storage/logs/worker.log
 ```
 
 ## 8. Final Optimization
@@ -171,4 +171,4 @@ php artisan view:cache
 > [!TIP]
 > **Scheduler**: Ensure Laravel's background tasks run correctly.
 > Add this line to `crontab -e`:
-> `* * * * * cd /var/www/vb-system && php artisan schedule:run >> /dev/null 2>&1`
+> `* * * * * cd /var/www/mei && php artisan schedule:run >> /dev/null 2>&1`
