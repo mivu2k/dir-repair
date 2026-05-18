@@ -4,7 +4,7 @@ This guide provides a comprehensive roadmap for deploying the **MEI Technical Au
 
 ## 1. System Requirements & Stack
 - **OS**: Ubuntu 22.04+ (Recommended)
-- **PHP**: 8.4 (with mysql, fpm, gd, zip, bcmath, intl)
+- **PHP**: 8.3 (with mysql, fpm, gd, zip, bcmath, intl)
 - **Database**: MySQL 8.0+
 - **Web Server**: Nginx
 
@@ -16,13 +16,13 @@ Run these commands inside your LXC to prepare the environment:
 # Core System Update
 sudo apt update && sudo apt upgrade -y
 
-# Add PHP 8.4 Repository
+# Add PHP 8.3 Repository (if needed, or use default)
 sudo add-apt-repository ppa:ondrej/php -y
 sudo apt update
 
 # Install Essential Stack
-sudo apt install -y nginx php8.4-fpm php8.4-cli php8.4-mbstring php8.4-xml php8.4-curl \
-    php8.4-mysql php8.4-gd php8.4-zip php8.4-bcmath php8.4-intl nodejs npm mysql-server supervisor
+sudo apt install -y nginx php8.3-fpm php8.3-cli php8.3-mbstring php8.3-xml php8.3-curl \
+    php8.3-mysql php8.3-gd php8.3-zip php8.3-bcmath php8.3-intl nodejs npm mysql-server supervisor
 ```
 
 ## 3. Database Configuration (MySQL)
@@ -124,7 +124,7 @@ server {
     }
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
         fastcgi_hide_header X-Powered-By;
