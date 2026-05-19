@@ -57,8 +57,10 @@ class PartController extends Controller
         return redirect()->back()->with('success', 'Part updated.');
     }
 
-    public function destroy(Part $part)
+    public function destroy(Request $request, Part $part)
     {
+        $this->checkDeletePermission($request);
+
         $part->delete();
         return redirect()->back()->with('success', 'Part removed.');
     }

@@ -55,6 +55,8 @@ class GatePassController extends Controller
 
     public function update(Request $request, GatePass $gatePass)
     {
+        $this->checkEditPermission($request, $gatePass, 'status', ['issued', 'approved']);
+
         $validated = $request->validate([
             'type' => 'required|in:inward,outward',
             'person_name' => 'required|string|max:255',
@@ -72,8 +74,10 @@ class GatePassController extends Controller
         return redirect()->back()->with('success', 'Gate pass updated successfully.');
     }
 
-    public function destroy(GatePass $gatePass)
+    public function destroy(Request $request, GatePass $gatePass)
     {
+        $this->checkDeletePermission($request);
+
         $gatePass->delete();
         return redirect()->back()->with('success', 'Gate pass deleted successfully.');
     }

@@ -37,6 +37,8 @@ class DiagnosisController extends Controller
 
     public function update(Request $request, Diagnosis $diagnosis)
     {
+        $this->checkEditPermission($request, $diagnosis->repairJob, 'status', ['completed', 'delivered', 'cancelled']);
+
         $validated = $request->validate([
             'findings' => 'required|string',
             'required_parts' => 'nullable|string',
@@ -49,8 +51,10 @@ class DiagnosisController extends Controller
         return back()->with('message', 'Diagnosis updated successfully.');
     }
 
-    public function destroy(Diagnosis $diagnosis)
+    public function destroy(Request $request, Diagnosis $diagnosis)
     {
+        $this->checkDeletePermission($request);
+
         $diagnosis->delete();
 
         return back()->with('message', 'Diagnosis removed.');

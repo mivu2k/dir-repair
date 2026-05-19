@@ -93,8 +93,10 @@ class CustomerController extends Controller
         return redirect()->route('customers.show', $customer)->with('message', 'Customer updated successfully.');
     }
 
-    public function destroy(Customer $customer)
+    public function destroy(Request $request, Customer $customer)
     {
+        $this->checkDeletePermission($request);
+
         if ($customer->repairJobs()->exists()) {
             return back()->withErrors(['message' => 'Cannot delete customer with existing jobs.']);
         }

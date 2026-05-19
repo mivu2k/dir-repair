@@ -25,6 +25,8 @@ const form = useForm({
     items: [{ name: '', serial: '', accessories: '' }],
     expected_return_date: '',
     notes: '',
+    reference_letter: '',
+    department: '',
 });
 
 const returnForm = useForm({
@@ -72,6 +74,8 @@ const editIssuance = (issuance) => {
     form.items = JSON.parse(JSON.stringify(issuance.items));
     form.expected_return_date = issuance.expected_return_date;
     form.notes = issuance.notes;
+    form.reference_letter = issuance.reference_letter || '';
+    form.department = issuance.department || '';
 };
 
 const deleteIssuance = (id) => {
@@ -87,6 +91,17 @@ const submitReturn = () => {
             returnForm.reset();
         },
     });
+};
+
+const canEdit = (issuance) => {
+    const roles = props.auth?.user?.roles || [];
+    if (roles.includes('admin') || roles.includes('manager')) return true;
+    return issuance.status !== 'returned';
+};
+
+const canDelete = () => {
+    const roles = props.auth?.user?.roles || [];
+    return roles.includes('admin') || roles.includes('manager');
 };
 </script>
 
@@ -124,6 +139,8 @@ const submitReturn = () => {
                             <td class="px-6 py-4 align-top">
                                 <div class="font-bold text-slate-900">{{ issuance.issuance_number }}</div>
                                 <div class="text-slate-500">{{ issuance.customer.name }}</div>
+                                <div v-if="issuance.department" class="text-[11px] text-slate-400 font-medium">Dept: {{ issuance.department }}</div>
+                                <div v-if="issuance.reference_letter" class="text-[11px] text-slate-400 font-medium">Ref: {{ issuance.reference_letter }}</div>
                             </td>
                             <td class="px-6 py-4 align-top">
                                 <div v-for="(item, idx) in issuance.items" :key="idx" class="mb-2 last:mb-0 border-l-2 border-slate-200 pl-2">
@@ -146,8 +163,8 @@ const submitReturn = () => {
                                     </div>
                                     <div class="flex gap-4 items-center">
                                         <button v-if="issuance.status === 'issued'" @click="returningItem = issuance" class="text-emerald-600 hover:text-emerald-900 font-bold text-xs uppercase">Return</button>
-                                        <button @click="editIssuance(issuance)" class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase">Edit</button>
-                                        <button @click="deleteIssuance(issuance.id)" class="text-red-400 hover:text-red-600 font-bold text-xs uppercase">Del</button>
+                                        <button v-if="canEdit(issuance)" @click="editIssuance(issuance)" class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase">Edit</button>
+                                        <button v-if="canDelete()" @click="deleteIssuance(issuance.id)" class="text-red-400 hover:text-red-600 font-bold text-xs uppercase">Del</button>
                                     </div>
                                 </div>
                             </td>
@@ -201,6 +218,14 @@ const submitReturn = () => {
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 border-t pt-6">
+                        <div>
+                            <InputLabel value="Reference Letter / Document #" />
+                            <TextInput v-model="form.reference_letter" type="text" class="w-full" />
+                        </div>
+                        <div>
+                            <InputLabel value="Department / Section" />
+                            <TextInput v-model="form.department" type="text" class="w-full" />
+                        </div>
                         <div>
                             <InputLabel value="Expected Return Date" />
                             <TextInput v-model="form.expected_return_date" type="date" class="w-full" />

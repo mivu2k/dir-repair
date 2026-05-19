@@ -86,6 +86,12 @@
             <div class="party-name">{{ $demoIssuance->customer->name }}</div>
             <div class="party-detail">
                 {{ $demoIssuance->customer->organization }}<br>
+                @if($demoIssuance->department)
+                    <strong>Department:</strong> {{ $demoIssuance->department }}<br>
+                @endif
+                @if($demoIssuance->reference_letter)
+                    <strong>Ref Letter/Doc #:</strong> {{ $demoIssuance->reference_letter }}<br>
+                @endif
                 {{ $demoIssuance->customer->phone }}<br>
                 {{ $demoIssuance->customer->email }}
             </div>

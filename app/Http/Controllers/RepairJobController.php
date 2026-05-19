@@ -86,6 +86,8 @@ class RepairJobController extends Controller
 
     public function updateStatus(Request $request, RepairJob $job)
     {
+        $this->checkEditPermission($request, $job, 'status', ['completed', 'delivered', 'cancelled']);
+
         $validated = $request->validate([
             'status' => 'required|in:received,diagnosing,waiting_approval,in_progress,completed,delivered,cancelled',
             'note' => 'nullable|string'
@@ -108,6 +110,8 @@ class RepairJobController extends Controller
 
     public function update(Request $request, RepairJob $job)
     {
+        $this->checkEditPermission($request, $job, 'status', ['completed', 'delivered', 'cancelled']);
+
         $validated = $request->validate([
             'device_name' => 'required|string|max:255',
             'brand' => 'required|string|max:255',
@@ -143,8 +147,10 @@ class RepairJobController extends Controller
         return redirect()->route('jobs.show', $job->job_number)->with('message', 'Job updated successfully.');
     }
 
-    public function destroy(RepairJob $job)
+    public function destroy(Request $request, RepairJob $job)
     {
+        $this->checkDeletePermission($request);
+
         DB::transaction(function () use ($job) {
             // 1. CLEARANCE SEQUENCE: Payments -> Orders -> Items -> Quotations -> Assets -> Logs -> Job
 

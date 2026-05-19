@@ -203,6 +203,8 @@ class QuotationController extends Controller
 
     public function updateStatus(Request $request, Quotation $quotation)
     {
+        $this->checkEditPermission($request, $quotation, 'status', ['approved']);
+
         $validated = $request->validate([
             'status' => 'required|in:draft,sent,approved,rejected,expired,pending',
         ]);
@@ -222,8 +224,10 @@ class QuotationController extends Controller
         return back()->with('message', 'Quotation status updated.');
     }
 
-    public function destroy(Quotation $quotation)
+    public function destroy(Request $request, Quotation $quotation)
     {
+        $this->checkDeletePermission($request);
+
         DB::transaction(function () use ($quotation) {
             $quotation->items()->delete();
             $quotation->delete();

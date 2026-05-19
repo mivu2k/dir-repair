@@ -56,6 +56,12 @@
         VOUCHER: {{ $demoIssuance->issuance_number }}<br>
         DATE: {{ $demoIssuance->issued_at->format('d/m/y H:i') }}<br>
         CLIENT: {{ $demoIssuance->customer->name }}
+        @if($demoIssuance->department)
+            <br>DEPT: {{ $demoIssuance->department }}
+        @endif
+        @if($demoIssuance->reference_letter)
+            <br>REF: {{ $demoIssuance->reference_letter }}
+        @endif
     </div>
 
     <div class="divider"></div>

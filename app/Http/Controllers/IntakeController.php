@@ -174,8 +174,10 @@ class IntakeController extends Controller
         return back()->with('message', 'Intake parameters updated.');
     }
 
-    public function destroy(Intake $intake)
+    public function destroy(Request $request, Intake $intake)
     {
+        $this->checkDeletePermission($request);
+
         DB::transaction(function () use ($intake) {
             // 1. Handle Intake-level Operations (Hard Purge)
             // Use withTrashed() to ensure we find ALREADY soft-deleted jobs that still reference this intake

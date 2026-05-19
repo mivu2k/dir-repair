@@ -9,7 +9,8 @@ class DemoIssuance extends Model
     protected $fillable = [
         'issuance_number', 'customer_id', 'items',
         'issued_at', 'expected_return_date', 
-        'returned_at', 'status', 'notes', 'issued_by', 'received_by'
+        'returned_at', 'status', 'notes', 'issued_by', 'received_by',
+        'reference_letter', 'department'
     ];
     
     protected $casts = [

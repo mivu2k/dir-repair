@@ -44,7 +44,9 @@ class DemoIssuanceController extends Controller
             'items.*.serial' => 'nullable|string|max:255',
             'items.*.accessories' => 'nullable|string',
             'expected_return_date' => 'nullable|date',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
+            'reference_letter' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
         ]);
 
         $validated['issuance_number'] = \App\Services\NumberGeneratorService::next('demo');
@@ -59,6 +61,8 @@ class DemoIssuanceController extends Controller
 
     public function update(Request $request, DemoIssuance $demoIssuance)
     {
+        $this->checkEditPermission($request, $demoIssuance);
+
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'items' => 'required|array|min:1',
@@ -66,7 +70,9 @@ class DemoIssuanceController extends Controller
             'items.*.serial' => 'nullable|string|max:255',
             'items.*.accessories' => 'nullable|string',
             'expected_return_date' => 'nullable|date',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
+            'reference_letter' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
         ]);
 
         $demoIssuance->update($validated);
@@ -74,8 +80,10 @@ class DemoIssuanceController extends Controller
         return redirect()->back()->with('success', 'Demo issuance updated successfully.');
     }
 
-    public function destroy(DemoIssuance $demoIssuance)
+    public function destroy(Request $request, DemoIssuance $demoIssuance)
     {
+        $this->checkDeletePermission($request);
+
         $demoIssuance->delete();
         return redirect()->back()->with('success', 'Demo issuance deleted successfully.');
     }

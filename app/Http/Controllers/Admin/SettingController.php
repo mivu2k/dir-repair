@@ -59,8 +59,9 @@ class SettingController extends Controller
         return back()->with('message', 'Symptom added successfully.');
     }
 
-    public function destroySymptom(Symptom $symptom)
+    public function destroySymptom(Request $request, Symptom $symptom)
     {
+        $this->checkDeletePermission($request);
         $symptom->delete();
         return back()->with('message', 'Symptom deleted successfully.');
     }
@@ -72,8 +73,9 @@ class SettingController extends Controller
         return back()->with('message', 'Accessory added successfully.');
     }
 
-    public function destroyAccessory(Accessory $accessory)
+    public function destroyAccessory(Request $request, Accessory $accessory)
     {
+        $this->checkDeletePermission($request);
         $accessory->delete();
         return back()->with('message', 'Accessory deleted successfully.');
     }
@@ -85,8 +87,9 @@ class SettingController extends Controller
         return back()->with('message', 'Brand added successfully.');
     }
 
-    public function destroyBrand(Brand $brand)
+    public function destroyBrand(Request $request, Brand $brand)
     {
+        $this->checkDeletePermission($request);
         $brand->delete();
         return back()->with('message', 'Brand deleted successfully.');
     }
@@ -98,8 +101,9 @@ class SettingController extends Controller
         return back()->with('message', 'Device category added successfully.');
     }
 
-    public function destroyDevice(Device $device)
+    public function destroyDevice(Request $request, Device $device)
     {
+        $this->checkDeletePermission($request);
         $device->delete();
         return back()->with('message', 'Device category deleted successfully.');
     }
