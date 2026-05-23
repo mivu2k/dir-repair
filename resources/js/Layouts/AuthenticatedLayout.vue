@@ -1,12 +1,19 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 
 const isSidebarOpen = ref(true);
 const isMobile = ref(false);
+const searchQuery = ref('');
 
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+const handleSearch = () => {
+    if (searchQuery.value.trim()) {
+        router.visit(route('jobs.index', { search: searchQuery.value }));
+    }
 };
 
 const user = usePage().props.auth.user;
@@ -28,11 +35,16 @@ const canAccessDemo = computed(() => ['admin', 'manager', 'sales', 'store', 'sup
 const canAccessGatePass = computed(() => ['admin', 'manager', 'store', 'supervisor'].includes(role.value));
 
 const handleResize = () => {
+    const wasMobile = isMobile.value;
     isMobile.value = window.innerWidth < 1024;
-    if (isMobile.value) {
-        isSidebarOpen.value = false;
-    } else {
-        isSidebarOpen.value = true;
+    
+    // Only force sidebar state if we actually crossed the mobile/desktop boundary!
+    if (isMobile.value !== wasMobile) {
+        if (isMobile.value) {
+            isSidebarOpen.value = false;
+        } else {
+            isSidebarOpen.value = true;
+        }
     }
 };
 
@@ -63,7 +75,7 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <!-- Centered M365 Search Bar -->
+            <!-- Centered M365 Search Bar (Fully Functional) -->
             <div class="flex-1 max-w-lg mx-6 hidden md:block">
                 <div class="relative w-full">
                     <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
@@ -73,7 +85,9 @@ onUnmounted(() => {
                     </span>
                     <input 
                         type="text" 
-                        placeholder="Search users, jobs, bills or settings..." 
+                        placeholder="Search users, jobs, brands or serial numbers..." 
+                        v-model="searchQuery"
+                        @keyup.enter="handleSearch"
                         class="w-full bg-white text-slate-800 text-xs rounded-sm pl-8 pr-3 py-1.5 border border-transparent focus:border-white focus:ring-0 focus:outline-none transition-all placeholder-slate-400 h-8"
                     />
                 </div>
@@ -128,7 +142,7 @@ onUnmounted(() => {
                         </Link>
                         
                         <Link v-if="canAccessCustomers" :href="route('customers.index')" class="m365-nav-link" :class="{ 'active': route().current('customers.*') }">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             Customers
                         </Link>
                         
@@ -138,7 +152,7 @@ onUnmounted(() => {
                         </Link>
                         
                         <Link v-if="canAccessDemo" :href="route('demo-issuances.index')" class="m365-nav-link" :class="{ 'active': route().current('demo-issuances.*') }">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                             Demo Goods
                         </Link>
                         
@@ -148,7 +162,7 @@ onUnmounted(() => {
                         </Link>
                         
                         <Link v-if="canAccessFinancials" :href="route('tracking.index')" class="m365-nav-link" :class="{ 'active': route().current('tracking.*') }">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 002-2h-2a2 2 0 00-2 2"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 002-2h-2a2 2 0 00-2 2"></path></svg>
                             Audit Hub
                         </Link>
 
@@ -157,12 +171,12 @@ onUnmounted(() => {
                             <div class="px-4 py-1.5 text-[9px] font-black text-slate-400 uppercase tracking-wider mt-4">Administrative</div>
                             
                             <Link :href="route('admin.users.index')" class="m365-nav-link" :class="{ 'active': route().current('admin.users.*') }">
-                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                 Users
                             </Link>
                             
                             <Link :href="route('admin.settings')" class="m365-nav-link" :class="{ 'active': route().current('admin.settings*') }">
-                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31(2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31(2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
                                 Settings
                             </Link>
                         </template>
@@ -172,7 +186,7 @@ onUnmounted(() => {
                 <!-- Sign Out in Sidebar Footer -->
                 <div class="px-2">
                     <Link :href="route('logout')" method="post" as="button" class="w-full text-left flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-[#323130] hover:bg-[#e1dfdd] rounded transition-colors select-none">
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         Sign Out
                     </Link>
                 </div>

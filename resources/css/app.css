@@ -25,44 +25,82 @@ body {
     font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
 }
 
-/* Custom classes for standard table grids mapping Microsoft 365 data grid */
-@layer components {
-    .m365-table {
-        @apply w-full border-collapse text-xs text-left bg-white;
-    }
-    
-    .m365-table thead th {
-        @apply font-semibold text-[#605e5c] py-2 px-3 border-b border-[#e1dfdd] select-none hover:bg-slate-50;
-    }
-    
-    .m365-table tbody tr {
-        @apply border-b border-[#f3f2f1] hover:bg-[#f3f2f1]/50 transition-colors duration-100;
-    }
-    
-    .m365-table tbody td {
-        @apply py-2.5 px-3 text-[#323130] font-medium align-middle;
-    }
+/* Global M365 Tables & Data Grids */
+main table {
+    @apply w-full border-collapse text-xs text-left bg-white shadow-sm border border-[#e1dfdd] rounded-sm overflow-hidden mb-6;
+}
 
+main table thead th {
+    @apply font-semibold text-[#605e5c] py-2 px-3 border-b border-[#e1dfdd] bg-[#fafafa] select-none hover:bg-slate-50;
+}
+
+main table tbody tr {
+    @apply border-b border-[#f3f2f1] hover:bg-[#f3f2f1]/50 transition-colors duration-100;
+}
+
+main table tbody tr.selected {
+    @apply bg-[#f3f2f1];
+}
+
+main table tbody td {
+    @apply py-3 px-3 text-[#323130] font-medium align-middle;
+}
+
+/* Global M365 Card Views & Panels */
+main .card, 
+main [class*="bg-white"] {
+    border: 1px solid #e1dfdd !important;
+    border-radius: 2px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* M365 Action toolbar blocks */
+.m365-toolbar {
+    @apply flex flex-wrap items-center justify-between gap-4 py-2 px-4 bg-white border border-[#e1dfdd] border-b-0 rounded-t-sm select-none;
+}
+
+.m365-toolbar-left {
+    @apply flex flex-wrap items-center gap-4 text-xs font-semibold text-[#323130];
+}
+
+.m365-toolbar-btn {
+    @apply flex items-center gap-1.5 text-xs font-semibold text-[#0078d4] hover:text-[#005a9e] transition-colors py-1 px-2 rounded hover:bg-slate-50;
+}
+
+/* Global Form Components Overhaul */
+@layer components {
     /* M365 flat input boxes */
-    .input-field {
-        @apply w-full bg-white border border-[#a19f9d] rounded-sm px-3 py-1.5 text-xs text-[#323130]
-               focus:border-[var(--theme-primary)] focus:ring-1 focus:ring-[var(--theme-primary)] transition-all outline-none 
+    .input-field,
+    main input[type="text"],
+    main input[type="email"],
+    main input[type="password"],
+    main input[type="number"],
+    main select,
+    main textarea {
+        @apply w-full bg-white border border-[#a19f9d] rounded-sm px-3 py-1.5 text-xs text-[#323130] shadow-sm
+               focus:border-[#0078d4] focus:ring-1 focus:ring-[#0078d4] transition-all outline-none 
                placeholder-[#a19f9d];
     }
 
-    /* M365 action bar buttons */
-    .btn-primary {
-        @apply bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-1.5 rounded-sm text-xs font-semibold 
+    /* M365 checkbox overrides */
+    main input[type="checkbox"] {
+        @apply rounded-sm border-[#a19f9d] text-[#0078d4] shadow-sm focus:ring-[#0078d4] focus:ring-offset-0;
+    }
+
+    /* M365 action buttons */
+    .btn-primary,
+    main button[type="submit"] {
+        @apply bg-[#0078d4] hover:bg-[#005a9e] text-white px-5 py-1.5 rounded-sm text-xs font-semibold 
                transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98];
     }
 
     .btn-secondary {
-        @apply bg-white border border-[#8a8886] hover:bg-[#f3f2f1] text-[#323130] px-4 py-1.5 rounded-sm 
+        @apply bg-white border border-[#8a8886] hover:bg-[#f3f2f1] text-[#323130] px-5 py-1.5 rounded-sm 
                text-xs font-semibold transition-all flex items-center justify-center gap-1.5;
     }
 }
 
-/* Microsoft 365 custom scrollbar styling */
+/* M365 custom scrollbars */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -78,7 +116,24 @@ body {
     background: #a19f9d;
 }
 
-/* Slide up animation for main content slot */
+/* Stepper step timelines for drawer modals */
+.m365-stepper {
+    @apply flex flex-col border-r border-[#e1dfdd] pr-6 py-2 select-none;
+}
+.m365-step {
+    @apply flex items-center gap-3 py-2 text-xs font-semibold text-slate-500 transition-colors;
+}
+.m365-step.active {
+    @apply text-[#0078d4] font-bold;
+}
+.m365-step-circle {
+    @apply w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-[10px];
+}
+.m365-step.active .m365-step-circle {
+    @apply border-[#0078d4] bg-[#0078d4] text-white;
+}
+
+/* Slide up animations */
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -88,14 +143,14 @@ body {
     animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
 }
 
-/* Overriding default Inertia/Laravel focus overlays to use pure corporate red */
+/* Overriding Laravel elements to use M365 Blue */
 [class*="focus:ring-indigo-500"]:focus {
-    --tw-ring-color: var(--theme-primary) !important;
-    border-color: var(--theme-primary) !important;
+    --tw-ring-color: #0078d4 !important;
+    border-color: #0078d4 !important;
 }
 [class*="focus:border-indigo-500"]:focus {
-    border-color: var(--theme-primary) !important;
+    border-color: #0078d4 !important;
 }
 [class*="text-indigo-600"] {
-    color: var(--theme-primary) !important;
+    color: #0078d4 !important;
 }
