@@ -6,17 +6,17 @@
 
 :root {
     /* Tailwind Theme RGB variables (for tailwind.config.js mapping) */
-    --primary: 224 49 49;          /* #e03131 (Warm Red) */
-    --accent: 201 42 42;           /* #c92a2a (Hover Red) */
+    --primary: 225 29 72;          /* #e11d48 (Corporate Rose) */
+    --accent: 190 18 60;           /* #be123c (Hover Rose) */
     --surface: 255 255 255;        /* #ffffff (Pure White) */
-    --background: 248 249 250;     /* #f8f9fa (Canvas Background) */
-    --border: 226 232 240;         /* #e2e8f0 (Slate Border) */
+    --background: 248 250 252;     /* #f8fafc (Sleek slate-50) */
+    --border: 241 245 249;         /* #f1f5f9 (Slate-100 Border) */
 
     /* Direct CSS variables for explicit custom class mappings */
-    --theme-primary: #e03131;
-    --theme-primary-hover: #c92a2a;
-    --theme-primary-glow: rgba(224, 49, 49, 0.15);
-    --theme-primary-bg: #fff5f5;
+    --theme-primary: #e11d48;
+    --theme-primary-hover: #be123c;
+    --theme-primary-glow: rgba(225, 29, 72, 0.15);
+    --theme-primary-bg: #fff1f2;
 }
 
 body {
