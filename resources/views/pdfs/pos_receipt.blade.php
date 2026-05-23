@@ -5,62 +5,227 @@
     <title>POS Receipt</title>
     <style>
         @page { margin: 0; }
-        body { 
-            font-family: 'Helvetica', 'Arial', sans-serif; 
-            font-size: 11pt; 
-            line-height: 1.2; 
-            width: 76mm; 
-            padding: 2mm;
-            margin: 0;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10pt;
+            font-weight: 700;
+            line-height: 1.35;
+            width: 76mm;
+            padding: 3mm 2.5mm 8mm 2.5mm;
             color: #000;
             background: #fff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .bold { font-weight: bold; }
-        .uppercase { text-transform: uppercase; }
-        
-        .divider { border-bottom: 1pt dashed #000; margin: 4pt 0; }
-        .divider-double { border-bottom: 2pt solid #000; margin: 4pt 0; }
-        
-        .header { margin-bottom: 8pt; text-align: center; }
-        .company-name { font-size: 18pt; font-weight: 900; letter-spacing: -1pt; margin: 2pt 0; }
-        .company-info { font-size: 9pt; line-height: 1.1; margin-bottom: 4pt; }
-        
-        .receipt-type { 
-            font-size: 12pt; 
-            background: #000; 
-            color: #fff; 
-            padding: 2pt 0; 
-            margin: 4pt 0; 
+
+        /* ── Header ── */
+        .header { text-align: center; margin-bottom: 2mm; }
+        .logo-img {
+            max-height: 52pt;
+            max-width: 68mm;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 1.5mm;
+        }
+        .company-name {
+            font-size: 15pt;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.5pt;
+            line-height: 1;
+        }
+        .company-sub {
+            font-size: 8pt;
+            font-weight: 900;
+            line-height: 1.4;
+            margin-top: 1mm;
+        }
+        .receipt-type {
+            display: block;
+            background: #000 !important;
+            color: #fff !important;
+            text-align: center;
+            font-size: 9.5pt;
+            font-weight: 900;
+            letter-spacing: 3pt;
+            text-transform: uppercase;
+            padding: 1.8mm 0;
+            margin: 2mm 0 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ── Dividers ── */
+        .div-solid  { border: none; border-top: 1.5pt solid #000; margin: 2.5mm 0; }
+        .div-dashed { border: none; border-top: 1.2pt dashed #000;  margin: 2mm 0;   }
+        .div-double {
+            border: none;
+            border-top: 3pt double #000;
+            margin: 2.5mm 0;
+        }
+
+        /* ── Key-Value rows ── */
+        .kv-block { margin: 1.5mm 0; }
+        .kv-row   { display: table; width: 100%; margin-bottom: 1.2mm; }
+        .kv-label {
+            display: table-cell;
+            font-size: 8.5pt;
+            font-weight: 900;
+            text-transform: uppercase;
+            white-space: nowrap;
+            padding-right: 2mm;
+            width: 30%;
+            vertical-align: top;
+        }
+        .kv-value {
+            display: table-cell;
+            font-size: 8.5pt;
+            font-weight: 900;
+            text-align: right;
+            vertical-align: top;
+            word-break: break-all;
+        }
+        .kv-value.large {
+            font-size: 11pt;
+            font-weight: 900;
+        }
+
+        /* ── Section title ── */
+        .section-title {
+            font-size: 8.5pt;
+            font-weight: 900;
+            text-transform: uppercase;
             letter-spacing: 2pt;
+            margin: 2.5mm 0 1.5mm;
+            border-bottom: 1.5pt solid #000;
+            padding-bottom: 0.5mm;
         }
-        
-        .info-section { margin: 6pt 0; }
-        .info-row { display: block; margin-bottom: 1pt; font-size: 10pt; }
-        .label { font-weight: bold; color: #000; }
-        .value { font-weight: bold; float: right; color: #000; }
-        
-        .job-card { 
-            border: 1pt solid #000; 
-            padding: 4pt; 
-            margin: 4pt 0; 
+
+        /* ── Items table ── */
+        .items-table { width: 100%; border-collapse: collapse; margin: 1mm 0; }
+        .items-table thead th {
+            font-size: 8.5pt;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5pt;
+            padding: 1.2mm 0;
+            border-top: 1.5pt solid #000;
+            border-bottom: 1.5pt solid #000;
+            text-align: left;
         }
-        
-        .items-table { width: 100%; border-collapse: collapse; margin: 6pt 0; }
-        .items-table th { text-align: left; border-bottom: 1.5pt solid #000; padding: 2pt 0; font-size: 9pt; font-weight: bold; }
-        .items-table td { padding: 4pt 0; vertical-align: top; border-bottom: 1pt dashed #000; font-size: 10pt; font-weight: bold; }
-        
-        .total-section { margin-top: 4pt; border-top: 1.5pt solid #000; padding-top: 4pt; }
-        .total-row { display: block; padding: 1pt 0; font-size: 11pt; font-weight: bold; }
-        .grand-total { font-size: 14pt; margin-top: 2pt; border-top: 1pt solid #000; padding-top: 4pt; font-weight: 900; }
-        
-        .footer { margin-top: 12pt; font-size: 8pt; border-top: 1.5pt dashed #000; padding-top: 6pt; font-weight: bold; }
-        .qr-placeholder { margin: 10pt 0; text-align: center; }
-        .job-no-footer { font-size: 14pt; letter-spacing: 3pt; font-weight: 900; margin-top: 4pt; color: #000; }
-        
-        .clearfix::after { content: ""; clear: both; display: table; }
-        .mono { font-family: monospace; }
+        .items-table thead th:last-child { text-align: right; }
+        .items-table tbody td {
+            padding: 1.8mm 0;
+            font-size: 9pt;
+            font-weight: 900;
+            vertical-align: top;
+            border-bottom: 1pt dashed #000;
+        }
+        .items-table tbody tr:last-child td { border-bottom: none; }
+        .items-table tbody td:last-child {
+            text-align: right;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+        .item-badge {
+            display: block;
+            font-size: 7.5pt;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5pt;
+            margin-top: 0.5mm;
+        }
+
+        /* ── Totals ── */
+        .total-row {
+            display: table;
+            width: 100%;
+            padding: 1mm 0;
+        }
+        .t-label {
+            display: table-cell;
+            font-size: 9pt;
+            font-weight: 900;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+        .t-value {
+            display: table-cell;
+            font-size: 9pt;
+            font-weight: 900;
+            text-align: right;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .total-grand {
+            background: #000 !important;
+            color: #fff !important;
+            padding: 2.2mm;
+            margin: 2mm 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            display: table;
+            width: 100%;
+        }
+        .total-grand .t-label,
+        .total-grand .t-value {
+            font-size: 12pt;
+            font-weight: 900;
+            color: #fff !important;
+        }
+
+        /* ── Job card (batch intake) ── */
+        .job-card {
+            border: 1.5pt solid #000;
+            padding: 2.2mm;
+            margin-bottom: 2.5mm;
+        }
+        .job-num    { font-size: 11pt; font-weight: 900; }
+        .job-device { font-size: 9.5pt; font-weight: 900; text-transform: uppercase; margin-top: 0.8mm; }
+        .job-meta   { font-size: 8pt; font-weight: 900; margin-top: 0.8mm; }
+
+        /* ── Device block ── */
+        .device-name { font-size: 12pt; font-weight: 900; text-transform: uppercase; line-height: 1.25; }
+        .device-meta { font-size: 9pt; font-weight: 900; margin-top: 1mm; }
+        .issue-box {
+            border: 1.5pt solid #000;
+            padding: 2.2mm;
+            margin-top: 2.5mm;
+            font-size: 9pt;
+            font-weight: 900;
+            line-height: 1.45;
+        }
+        .issue-label {
+            display: block;
+            font-size: 8pt;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1pt;
+            border-bottom: 1.2pt solid #000;
+            padding-bottom: 0.5mm;
+            margin-bottom: 1.2mm;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            margin-top: 5mm;
+            padding-top: 2.5mm;
+            border-top: 1.5pt dashed #000;
+        }
+        .footer-title {
+            font-size: 9.5pt;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5pt;
+            margin-bottom: 1.5mm;
+        }
+        .terms { font-size: 8pt; font-weight: 900; line-height: 1.45; text-align: left; }
+        .qr-wrap { text-align: center; margin: 3.5mm 0 1.5mm; }
+        .qr-wrap img { width: 75pt; height: 75pt; display: block; margin: 0 auto; }
+        .footer-num { font-size: 10pt; font-weight: 900; letter-spacing: 2.5pt; margin-top: 1.5mm; }
+        .copy { font-size: 7.5pt; font-weight: 900; margin-top: 2.5mm; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -71,178 +236,215 @@
             $path = storage_path('app/public/' . $settings['company_logo']);
             if (file_exists($path)) {
                 $type_img = pathinfo($path, PATHINFO_EXTENSION);
-                $data = file_get_contents($path);
-                $logoBase64 = 'data:image/' . $type_img . ';base64,' . base64_encode($data);
+                $logoBase64 = 'data:image/' . $type_img . ';base64,' . base64_encode(file_get_contents($path));
             }
         }
+        $currency = $settings['currency_symbol'] ?? 'PKR';
     @endphp
 
+    {{-- HEADER --}}
     <div class="header">
-        <div class="logo">
-            @if(isset($logoBase64))
-                <img src="{{ $logoBase64 }}" alt="Logo" style="max-width: 120pt; height: auto;">
-            @else
-                <div class="company-name uppercase">{{ $settings['company_name'] ?? 'MEI' }}</div>
-            @endif
-        </div>
-        <div class="company-info">
+        @if($logoBase64)
+            <img src="{{ $logoBase64 }}" alt="Logo" class="logo-img">
+        @else
+            <div class="company-name">{{ $settings['company_name'] ?? 'MEI TECHNICAL' }}</div>
+        @endif
+        <div class="company-sub">
             {{ $settings['company_address'] ?? '' }}<br>
             {{ $settings['company_phone'] ?? '' }}
         </div>
-        <div class="receipt-type text-center uppercase bold">
-            @if($type === 'quotation') QUOTATION @elseif($type === 'intake_summary') BATCH SUMMARY @elseif($type === 'intake_delivery') BATCH DELIVERY @elseif($type === 'intake') INTAKE RECEIPT @else DELIVERY @endif
-        </div>
+        <span class="receipt-type">
+            @if($type === 'quotation') Quotation @elseif($type === 'intake_summary') Batch Summary @elseif($type === 'intake_delivery') Batch Delivery @elseif($type === 'intake') Intake Receipt @else Delivery @endif
+        </span>
     </div>
 
     @if($type === 'quotation')
-        <div class="info-section">
-            <div class="info-row clearfix"><span class="label">DATE:</span><span class="value">{{ now()->format('d/m/y H:i') }}</span></div>
-            <div class="info-row clearfix"><span class="label">QUOTE #:</span><span class="value">{{ $quotation->quotation_number }}</span></div>
-            <div class="info-row clearfix"><span class="label">CLIENT:</span><span class="value">{{ $quotation->customer ? $quotation->customer->name : ($quotation->repairJob ? $quotation->repairJob->customer->name : ($quotation->intake ? $quotation->intake->customer->name : 'N/A')) }}</span></div>
+        <div class="kv-block">
+            <div class="kv-row">
+                <span class="kv-label">DATE</span>
+                <span class="kv-value">{{ now()->format('d/m/y H:i') }}</span>
+            </div>
+            <div class="kv-row">
+                <span class="kv-label">QUOTE #</span>
+                <span class="kv-value large">{{ $quotation->quotation_number }}</span>
+            </div>
+            <div class="kv-row">
+                <span class="kv-label">CLIENT</span>
+                <span class="kv-value">{{ $quotation->customer ? $quotation->customer->name : ($quotation->repairJob ? $quotation->repairJob->customer->name : ($quotation->intake ? $quotation->intake->customer->name : 'N/A')) }}</span>
+            </div>
         </div>
-        <div class="divider"></div>
+
+        <div class="div-dashed"></div>
+        <div class="section-title">Items</div>
+
         <table class="items-table">
             <thead>
-                <tr class="uppercase">
-                    <th style="width: 70%;">Description</th>
-                    <th style="width: 30%;" class="text-right">Price</th>
+                <tr>
+                    <th style="width:73%;">Item</th>
+                    <th>Price</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($quotation->items as $item)
                 <tr>
                     <td>
-                        <span class="bold">{{ $item->description }}</span><br>
-                        <span style="font-size: 8pt; color: #000; font-weight: bold;">QTY: {{ $item->quantity }} | {{ strtoupper($item->item_type) }}</span>
+                        {{ $item->description }}
+                        <span class="item-badge">Qty {{ $item->quantity }} · {{ $item->item_type }}</span>
                     </td>
-                    <td class="text-right bold">{{ number_format($item->line_total, 0) }}</td>
+                    <td>{{ number_format($item->line_total, 0) }}</td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
-        <div class="total-section">
-            <div class="total-row grand-total clearfix">
-                <span class="bold uppercase">Total:</span>
-                <span class="bold">{{ $settings['currency_symbol'] ?? 'PKR' }} {{ number_format($quotation->total_amount, 0) }}</span>
+
+        <div class="div-dashed"></div>
+
+        <div class="total-grand">
+            <span class="t-label">TOTAL</span>
+            <span class="t-value">{{ $currency }} {{ number_format($quotation->total_amount, 0) }}</span>
+        </div>
+
+    @elseif($type === 'intake_summary' || $type === 'intake_delivery')
+        <div class="kv-block">
+            <div class="kv-row">
+                <span class="kv-label">BATCH ID</span>
+                <span class="kv-value large">{{ $intake->intake_number }}</span>
+            </div>
+            <div class="kv-row">
+                <span class="kv-label">DATE</span>
+                <span class="kv-value">{{ $intake->received_at->format('d/m/y H:i') }}</span>
+            </div>
+            <div class="kv-row">
+                <span class="kv-label">CLIENT</span>
+                <span class="kv-value">{{ $intake->customer->name }}</span>
             </div>
         </div>
-    @elseif($type === 'intake_summary' || $type === 'intake_delivery')
-        <div class="info-section">
-            <div class="info-row clearfix"><span class="label">BATCH ID:</span><span class="value">{{ $intake->intake_number }}</span></div>
-            <div class="info-row clearfix"><span class="label">DATE:</span><span class="value">{{ $intake->received_at->format('d/m/y H:i') }}</span></div>
-            <div class="info-row clearfix"><span class="label">CLIENT:</span><span class="value">{{ $intake->customer->name }}</span></div>
-        </div>
-        <div class="divider"></div>
-        <div class="bold uppercase" style="font-size: 9pt; margin: 4pt 0;">Units in Batch ({{ $intake->repairJobs->count() }}):</div>
+
+        <div class="div-dashed"></div>
+        <div class="section-title">Units in Batch ({{ $intake->repairJobs->count() }})</div>
+
         @foreach($intake->repairJobs as $job)
             <div class="job-card">
-                <div class="bold" style="font-size: 11pt;">{{ $job->job_number }}</div>
-                <div class="uppercase bold" style="font-size: 9pt;">{{ $job->brand }} {{ $job->device_name }}</div>
-                <div style="font-size: 8pt; color: #000; font-weight: bold;">
-                    MOD: {{ $job->model ?: '---' }} | SN: <span class="mono">{{ $job->serial_number ?: '---' }}</span>
-                </div>
+                <div class="job-num">{{ $job->job_number }}</div>
+                <div class="job-device">{{ $job->brand }} {{ $job->device_name }}</div>
+                <div class="job-meta">MOD: {{ $job->model ?: '—' }} | SN: {{ $job->serial_number ?: '—' }}</div>
             </div>
         @endforeach
+
     @else
-        <div class="info-section">
-            <div class="info-row clearfix"><span class="label">DATE:</span><span class="value">{{ now()->format('d/m/y H:i') }}</span></div>
-            <div class="info-row clearfix"><span class="label">JOB ID:</span><span class="value bold" style="font-size: 12pt;">{{ $job->job_number }}</span></div>
-        </div>
-        
-        <div class="divider"></div>
-        
-        <div class="info-section">
-            <div class="info-row clearfix"><span class="label">CLIENT:</span><span class="value">{{ $job->customer->name }}</span></div>
-            <div class="info-row clearfix"><span class="label">PHONE:</span><span class="value">{{ $job->customer->phone }}</span></div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="device-section" style="margin: 4pt 0;">
-            <div class="bold uppercase" style="font-size: 12pt;">{{ $job->brand }} {{ $job->device_name }}</div>
-            <div style="font-size: 9pt; font-weight: bold;">MODEL: {{ $job->model ?: '---' }} | SN: {{ $job->serial_number ?: '---' }}</div>
-            <div style="margin-top: 4pt; font-size: 10pt; background: #fff; padding: 4pt; border: 1pt solid #000;">
-                <span class="bold">REPORTED ISSUE:</span><br>
-                {{ $job->issue_description }}
+        <div class="kv-block">
+            <div class="kv-row">
+                <span class="kv-label">DATE</span>
+                <span class="kv-value">{{ now()->format('d/m/y H:i') }}</span>
             </div>
+            <div class="kv-row">
+                <span class="kv-label">JOB #</span>
+                <span class="kv-value large">{{ $job->job_number }}</span>
+            </div>
+        </div>
+
+        <div class="div-dashed"></div>
+
+        <div class="kv-block">
+            <div class="kv-row">
+                <span class="kv-label">CLIENT</span>
+                <span class="kv-value">{{ $job->customer->name }}</span>
+            </div>
+            <div class="kv-row">
+                <span class="kv-label">PHONE</span>
+                <span class="kv-value">{{ $job->customer->phone }}</span>
+            </div>
+        </div>
+
+        <div class="div-dashed"></div>
+
+        <div class="device-name">{{ $job->brand }} {{ $job->device_name }}</div>
+        <div class="device-meta">MODEL: {{ $job->model ?: '—' }} | SN: {{ $job->serial_number ?: '—' }}</div>
+        <div class="issue-box">
+            <span class="issue-label">Reported Issue</span>
+            {{ $job->issue_description }}
         </div>
 
         @if($type === 'delivery' && $job->salesOrder && $job->salesOrder->quotation)
-        <table class="items-table">
-            <thead>
-                <tr class="uppercase">
-                    <th style="width: 70%;">Service / Hardware</th>
-                    <th style="width: 30%;" class="text-right">Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($job->salesOrder->quotation->items as $item)
-                <tr>
-                    <td>
-                        <span class="bold">{{ $item->description }}</span><br>
-                        <span style="font-size: 8pt; color: #000; font-weight: bold;">QTY: {{ $item->quantity }} | {{ strtoupper($item->item_type) }}</span>
-                    </td>
-                    <td class="text-right bold">{{ number_format($item->line_total, 0) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+            <div class="div-dashed"></div>
+            <div class="section-title">Services & Parts</div>
 
-        <div class="total-section">
-            <div class="total-row clearfix">
-                <span class="label">SUBTOTAL:</span>
-                <span class="value">{{ number_format($job->salesOrder->total_amount, 0) }}</span>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width:73%;">Item</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($job->salesOrder->quotation->items as $item)
+                    <tr>
+                        <td>
+                            {{ $item->description }}
+                            <span class="item-badge">Qty {{ $item->quantity }} · {{ $item->item_type }}</span>
+                        </td>
+                        <td>{{ number_format($item->line_total, 0) }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <div class="div-dashed"></div>
+
+            <div class="total-grand">
+                <span class="t-label">TOTAL</span>
+                <span class="t-value">{{ $currency }} {{ number_format($job->salesOrder->total_amount, 0) }}</span>
             </div>
-            <div class="total-row grand-total clearfix">
-                <span class="bold uppercase">Total Due:</span>
-                <span class="bold">{{ $settings['currency_symbol'] ?? 'PKR' }} {{ number_format($job->salesOrder->total_amount, 0) }}</span>
+
+            <div class="total-row">
+                <span class="t-label">PAID</span>
+                <span class="t-value">{{ $currency }} {{ number_format($job->salesOrder->amount_paid, 0) }}</span>
             </div>
-            <div class="total-row clearfix">
-                <span class="label">PAID AMOUNT:</span>
-                <span class="value">{{ number_format($job->salesOrder->amount_paid, 0) }}</span>
+            <div class="div-dashed"></div>
+            <div class="total-row">
+                <span class="t-label">BALANCE</span>
+                <span class="t-value" style="font-size:11pt;">{{ $currency }} {{ number_format($job->salesOrder->balance_due, 0) }}</span>
             </div>
-            <div class="total-row bold clearfix" style="font-size: 12pt; border-top: 0.5pt dashed #000; margin-top: 2pt; padding-top: 2pt;">
-                <span class="label">BALANCE:</span>
-                <span class="value">{{ number_format($job->salesOrder->balance_due, 0) }}</span>
-            </div>
-        </div>
         @endif
     @endif
 
-    <div class="footer text-center">
-        <div class="bold uppercase" style="margin-bottom: 4pt; font-size: 10pt;">
-            @if($type === 'intake' || $type === 'intake_summary')
-                Terms & Conditions
+    {{-- FOOTER --}}
+    <div class="footer">
+        <div class="footer-title">
+            @if(in_array($type, ['intake', 'intake_summary'])) Terms & Conditions @else Thank You @endif
+        </div>
+        <div class="terms">
+            @if(in_array($type, ['intake', 'intake_summary']))
+                * Keep this receipt for device collection.<br>
+                * Please back up your data before submission.<br>
+                * Devices left over 30 days may be recycled.
             @else
-                Thank You
+                * Warranty applies per company policy.<br>
+                * No warranty on physical or liquid damage.<br>
+                * Keep receipt for warranty claims.
             @endif
         </div>
-        
-        <div style="font-size: 8pt; line-height: 1.1; margin-bottom: 10pt;">
-            @if($type === 'intake' || $type === 'intake_summary')
-                * Keep receipt for collection.<br>
-                * Backup your data; we are not responsible.<br>
-                * Units left over 30 days will be recycled.
-            @else
-                * Warranty as per company policy.<br>
-                * No warranty on physical/liquid damage.<br>
-                * Keep receipt for warranty validation.
-            @endif
+
+        @php
+            if ($type === 'intake_summary' || $type === 'intake_delivery') {
+                $qrData = url('/intakes/' . $intake->id);
+                $footerNo = $intake->intake_number;
+            } elseif ($type === 'quotation') {
+                $qrData = url('/quotations/' . $quotation->id);
+                $footerNo = $quotation->quotation_number;
+            } else {
+                $qrData = url('/jobs/' . $job->job_number);
+                $footerNo = $job->job_number;
+            }
+            $qrCode = base64_encode(SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(0)->errorCorrection('H')->generate($qrData));
+        @endphp
+
+        <div class="qr-wrap">
+            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
         </div>
-        
-        <div class="qr-placeholder">
-            @if(isset($qrCode))
-                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR" style="width: 80pt; height: 80pt;">
-            @endif
-        </div>
-        
-        <div class="job-no-footer">
-            {{ $footerNo ?? '' }}
-        </div>
-        
-        <div style="font-size: 8pt; margin-top: 15pt; color: #000; font-weight: bold;">
-            {{ now()->format('Y') }} &copy; {{ $settings['company_name'] ?? 'MEI OPS' }}
-        </div>
+
+        <div class="footer-num">{{ $footerNo }}</div>
+        <div class="copy">{{ now()->format('Y') }} &copy; {{ $settings['company_name'] ?? 'Company' }}</div>
     </div>
 </body>
 </html>

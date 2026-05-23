@@ -57,10 +57,10 @@ onUnmounted(() => {
         >
             <div class="h-full px-4 py-6 overflow-y-auto flex flex-col w-52">
                 <div class="mb-8 flex items-center gap-2 px-2">
-                    <div class="w-6 h-6 bg-slate-900 rounded-sm flex items-center justify-center">
+                    <div class="w-6 h-6 bg-[var(--theme-primary)] rounded-sm flex items-center justify-center">
                         <span class="text-white text-[10px] font-black italic">M</span>
                     </div>
-                    <span class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">MEI</span>
+                    <span class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--theme-primary)]">MEI</span>
                 </div>
 
                 <nav class="space-y-1 flex-1">
@@ -162,15 +162,15 @@ onUnmounted(() => {
 
 <style scoped>
 .nav-link {
-    @apply flex items-center gap-3 px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest transition-all rounded hover:text-slate-900 hover:bg-slate-50;
+    @apply flex items-center gap-3 px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest transition-all rounded hover:text-[var(--theme-primary)] hover:bg-[var(--theme-primary-bg)];
 }
 .nav-link.active {
-    @apply text-slate-900 bg-slate-50 border-r-2 border-slate-900;
+    @apply text-[var(--theme-primary)] bg-[var(--theme-primary-bg)] border-r-2 border-[var(--theme-primary)];
 }
 .nav-link svg {
     @apply w-4 h-4 transition-colors;
 }
 .nav-link.active svg {
-    @apply text-slate-900;
+    @apply text-[var(--theme-primary)];
 }
 </style>

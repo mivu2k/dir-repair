@@ -5,30 +5,39 @@
 @tailwind utilities;
 
 :root {
-    --primary: #0f172a;
-    --border: #e2e8f0;
-    --bg-main: #ffffff;
+    /* Tailwind Theme RGB variables (for tailwind.config.js mapping) */
+    --primary: 224 49 49;          /* #e03131 (Warm Red) */
+    --accent: 201 42 42;           /* #c92a2a (Hover Red) */
+    --surface: 255 255 255;        /* #ffffff (Pure White) */
+    --background: 248 249 250;     /* #f8f9fa (Canvas Background) */
+    --border: 226 232 240;         /* #e2e8f0 (Slate Border) */
+
+    /* Direct CSS variables for explicit custom class mappings */
+    --theme-primary: #e03131;
+    --theme-primary-hover: #c92a2a;
+    --theme-primary-glow: rgba(224, 49, 49, 0.15);
+    --theme-primary-bg: #fff5f5;
 }
 
 body {
-    @apply antialiased font-sans bg-white text-slate-900;
+    @apply antialiased font-sans bg-[var(--background)] text-slate-900;
     font-family: 'Inter', system-ui, sans-serif;
 }
 
 @layer components {
     .input-field {
         @apply w-full bg-white border border-slate-200 rounded px-2.5 py-2 text-[11px] font-bold text-slate-900 
-               focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 transition-all outline-none 
+               focus:ring-2 focus:ring-[var(--theme-primary-glow)] focus:border-[var(--theme-primary)] transition-all outline-none 
                placeholder:text-slate-300 placeholder:font-normal;
     }
 
     .btn-primary {
-        @apply bg-slate-900 hover:bg-black text-white px-3 py-2 rounded text-[10px] font-black uppercase tracking-widest 
-               transition-all active:scale-[0.98] flex items-center justify-center gap-2;
+        @apply bg-[var(--theme-primary)] hover:bg-[var(--theme-primary-hover)] text-white px-3.5 py-2 rounded text-[10px] font-black uppercase tracking-widest 
+               shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2;
     }
 
     .btn-secondary {
-        @apply bg-white border border-slate-200 hover:border-slate-900 text-slate-600 hover:text-slate-900 px-3 py-2 rounded 
+        @apply bg-white border border-slate-200 hover:border-[var(--theme-primary)] text-slate-600 hover:text-[var(--theme-primary)] px-3.5 py-2 rounded 
                text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2;
     }
 
@@ -58,6 +67,18 @@ body {
 
 .animate-slide-up {
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Global focus intercepts to map default Inertia/Tailwind rings to corporate red */
+[class*="focus:ring-indigo-500"]:focus {
+    --tw-ring-color: var(--theme-primary) !important;
+    border-color: var(--theme-primary) !important;
+}
+[class*="focus:border-indigo-500"]:focus {
+    border-color: var(--theme-primary) !important;
+}
+[class*="text-indigo-600"] {
+    color: var(--theme-primary) !important;
 }
 
 /* Mobile Adjustments */
