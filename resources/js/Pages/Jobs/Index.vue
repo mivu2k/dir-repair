@@ -33,32 +33,35 @@ watch(filters, () => {
         <div class="space-y-4">
             <!-- Global Filter Bar -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-slate-200 rounded-lg p-2.5">
-                <div class="relative flex-1 max-w-sm">
+                <div class="relative w-full md:max-w-sm">
                     <input 
                         v-model="filters.search" 
                         type="text" 
                         placeholder="Search Serial, Job, or Customer..." 
-                        class="input-field pl-8"
+                        class="input-field w-full"
+                        style="padding-left: 2.25rem !important;"
                     >
-                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <select v-model="filters.status" class="input-field py-1.5 w-auto capitalize">
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <select v-model="filters.status" class="input-field py-1.5 flex-1 md:flex-initial w-auto capitalize">
                         <option value="">All States</option>
                         <option v-for="s in statuses" :key="s" :value="s">{{ s.replace('_', ' ') }}</option>
                     </select>
-                    <select v-model="filters.technician_id" class="input-field py-1.5 w-auto">
+                    <select v-model="filters.technician_id" class="input-field py-1.5 flex-1 md:flex-initial w-auto">
                         <option value="">All Staff</option>
                         <option v-for="t in technicians" :key="t.id" :value="t.id">{{ t.name }}</option>
                     </select>
-                    <Link :href="route('intakes.create')" class="btn-primary">New Intake</Link>
+                    <Link :href="route('intakes.create')" class="btn-primary whitespace-nowrap">New Intake</Link>
                 </div>
             </div>
 
             <!-- Pipeline Matrix -->
             <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left">
+                    <table class="w-full text-left min-w-[700px] sm:min-w-full">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200 whitespace-nowrap">
                                 <th class="px-3 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">Job ID / Intake</th>

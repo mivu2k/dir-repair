@@ -39,6 +39,23 @@ class QuotationController extends Controller
 
     public function create(Request $request)
     {
+        $search = $request->query('search');
+
+        $quotations = Quotation::query()
+            ->with(['repairJob.customer'])
+            ->when($search, function ($query, $search) {
+                $query->where('quotation_number', 'like', "%{$search}%")
+                    ->orWhereHas('repairJob', function ($q) use ($search) {
+                        $q->where('job_number', 'like', "%{$search}%")
+                          ->orWhereHas('customer', function ($q2) use ($search) {
+                              $q2->where('name', 'like', "%{$search}%");
+                          });
+                    });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
         $job = null;
         $intake = null;
         $suggestedItems = [];
@@ -68,6 +85,8 @@ class QuotationController extends Controller
         }
 
         return Inertia::render('Quotations/Create', [
+            'quotations' => $quotations,
+            'filters' => $request->only(['search']),
             'initialJob' => $job,
             'initialIntake' => $intake,
             'suggestedItems' => $suggestedItems,
@@ -85,38 +104,48 @@ class QuotationController extends Controller
                 'unit_price' => 0,
             ];
         }
-        if ($diagnosis->part_id || $diagnosis->parts_required || $diagnosis->required_parts) {
-            // If we have a formal part link, use it primarily
-            if ($diagnosis->part_id && $diagnosis->part) {
+        
+        $partsText = $diagnosis->parts_required ?: $diagnosis->required_parts;
+        
+        if ($partsText) {
+            $partsList = explode(',', $partsText);
+            foreach ($partsList as $partName) {
+                $partName = trim($partName);
+                if (empty($partName)) continue;
+                
+                // Extract clean search name to ignore SKU text formatting
+                $searchName = $partName;
+                if (strpos($partName, ' (SKU:') !== false) {
+                    $searchName = trim(explode(' (SKU:', $partName)[0]);
+                }
+                
+                $inventoryPart = null;
+                if ($diagnosis->part_id && $diagnosis->part && (stripos($partName, $diagnosis->part->name) !== false || ($diagnosis->part->sku && stripos($partName, $diagnosis->part->sku) !== false))) {
+                    $inventoryPart = $diagnosis->part;
+                } else {
+                    $inventoryPart = \App\Models\Part::where('name', 'like', "%{$searchName}%")
+                        ->orWhere('sku', 'like', "%{$searchName}%")
+                        ->first();
+                }
+
                 $items[] = [
                     'item_type' => 'part',
-                    'description' => $diagnosis->part->name,
-                    'part_id' => $diagnosis->part_id,
+                    'description' => $partName,
+                    'part_id' => $inventoryPart ? $inventoryPart->id : null,
                     'quantity' => 1,
-                    'unit_price' => $diagnosis->part->price,
+                    'unit_price' => $inventoryPart ? $inventoryPart->price : 0,
                 ];
-            } else {
-                $partsText = $diagnosis->parts_required ?: $diagnosis->required_parts;
-                $partsList = explode(',', $partsText);
-                foreach ($partsList as $partName) {
-                    $partName = trim($partName);
-                    if (empty($partName)) continue;
-                    
-                    // Attempt to find part in inventory for pricing
-                    $inventoryPart = \App\Models\Part::where('name', 'like', "%{$partName}%")
-                        ->orWhere('sku', 'like', "%{$partName}%")
-                        ->first();
-
-                    $items[] = [
-                        'item_type' => 'part',
-                        'description' => $partName,
-                        'part_id' => $inventoryPart ? $inventoryPart->id : null,
-                        'quantity' => 1,
-                        'unit_price' => $inventoryPart ? $inventoryPart->price : 0,
-                    ];
-                }
             }
+        } elseif ($diagnosis->part_id && $diagnosis->part) {
+            $items[] = [
+                'item_type' => 'part',
+                'description' => $diagnosis->part->name,
+                'part_id' => $diagnosis->part_id,
+                'quantity' => 1,
+                'unit_price' => $diagnosis->part->price,
+            ];
         }
+        
         return $items;
     }
 

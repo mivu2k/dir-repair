@@ -10,7 +10,7 @@ class AccessorySeeder extends Seeder {
             'Power Supply', 'Carrying Case', 'Belt Clip', 'Earpiece', 'Programming Cable'
         ];
         foreach ($accessories as $a) {
-            Accessory::create(['name' => $a]);
+            Accessory::firstOrCreate(['name' => $a]);
         }
     }
 }

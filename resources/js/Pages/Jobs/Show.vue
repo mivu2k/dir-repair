@@ -37,6 +37,30 @@ const statusForm = useForm({
 });
 
 const selectedPartId = ref('');
+const customPartText = ref('');
+const customEditPartText = ref('');
+
+const parsePartsString = (str) => {
+    if (!str) return [];
+    return str.split(',').map(s => s.trim()).filter(Boolean);
+};
+
+const removePartFromDiagnosis = (targetForm, index) => {
+    const formObj = targetForm === 'edit' ? editForm : diagnosisForm;
+    const parts = parsePartsString(formObj.required_parts);
+    parts.splice(index, 1);
+    formObj.required_parts = parts.join(', ');
+};
+
+const addCustomPart = (targetForm) => {
+    const textVal = targetForm === 'edit' ? customEditPartText.value : customPartText.value;
+    if (!textVal.trim()) return;
+    const formObj = targetForm === 'edit' ? editForm : diagnosisForm;
+    const prefix = formObj.required_parts ? ', ' : '';
+    formObj.required_parts += `${prefix}${textVal.trim()}`;
+    if (targetForm === 'edit') customEditPartText.value = '';
+    else customPartText.value = '';
+};
 
 const addPartToDiagnosis = (targetForm) => {
     const sPartId = targetForm === 'edit' ? selectedEditPartId.value : selectedPartId.value;
@@ -231,9 +255,33 @@ const canManageFinancials = computed(() => isAdmin.value || isManager.value);
                                     </div>
                                     <div class="space-y-1">
                                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Formal Parts Required</label>
-                                        <input v-model="diagnosisForm.required_parts" type="text" class="input-field py-1.5 text-[11px]" placeholder="List required hardware identifiers...">
+                                        <div class="flex gap-1">
+                                            <input 
+                                                v-model="customPartText" 
+                                                @keyup.enter.prevent="addCustomPart('create')"
+                                                type="text" 
+                                                class="input-field py-1.5 text-[11px]" 
+                                                placeholder="Type custom part & press enter..."
+                                            >
+                                            <button type="button" @click="addCustomPart('create')" class="btn-secondary py-1 text-[10px] font-black">Add</button>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- Row-by-row parts display for Create form -->
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Selected Hardware Matrix List</label>
+                                    <div class="space-y-1.5 bg-slate-50 border border-slate-200/60 rounded p-2.5 min-h-[48px] max-h-36 overflow-y-auto fluent-scrollbar">
+                                        <div v-for="(part, index) in parsePartsString(diagnosisForm.required_parts)" :key="index" class="flex items-center justify-between bg-white border border-slate-200 px-2 py-1 rounded shadow-2xs text-[10px] font-semibold text-slate-700">
+                                            <span class="truncate">{{ part }}</span>
+                                            <button type="button" @click="removePartFromDiagnosis('create', index)" class="text-red-500 hover:text-red-700 ml-2 font-bold text-xs select-none">&times;</button>
+                                        </div>
+                                        <div v-if="!diagnosisForm.required_parts" class="text-[9px] text-slate-400 italic text-center py-2">
+                                            No formal parts selected
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="space-y-1">
                                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Labor Nodes / Specialized Service</label>
@@ -316,7 +364,30 @@ const canManageFinancials = computed(() => isAdmin.value || isManager.value);
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Required Hardware</label>
-                                <input v-model="editForm.required_parts" type="text" class="input-field py-1.5 text-[11px]">
+                                <div class="flex gap-1">
+                                    <input 
+                                        v-model="customEditPartText" 
+                                        @keyup.enter.prevent="addCustomPart('edit')"
+                                        type="text" 
+                                        class="input-field py-1.5 text-[11px]" 
+                                        placeholder="Type custom part..."
+                                    >
+                                    <button type="button" @click="addCustomPart('edit')" class="btn-secondary py-1 text-[10px] font-black">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row-by-row parts display for Edit Modal -->
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Selected Hardware Matrix List</label>
+                            <div class="space-y-1.5 bg-slate-50 border border-slate-200/60 rounded p-2.5 min-h-[48px] max-h-36 overflow-y-auto fluent-scrollbar">
+                                <div v-for="(part, index) in parsePartsString(editForm.required_parts)" :key="index" class="flex items-center justify-between bg-white border border-slate-200 px-2 py-1 rounded shadow-2xs text-[10px] font-semibold text-slate-700">
+                                    <span class="truncate">{{ part }}</span>
+                                    <button type="button" @click="removePartFromDiagnosis('edit', index)" class="text-red-500 hover:text-red-700 ml-2 font-bold text-xs select-none">&times;</button>
+                                </div>
+                                <div v-if="!editForm.required_parts" class="text-[9px] text-slate-400 italic text-center py-2">
+                                    No hardware assets allocated
+                                </div>
                             </div>
                         </div>
                         <div class="space-y-1">

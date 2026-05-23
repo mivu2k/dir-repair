@@ -13,7 +13,8 @@ class UserController extends Controller
     {
         return Inertia::render('Admin/Users', [
             'users' => User::with('roles')->get(),
-            'roles' => Role::all(),
+            'roles' => Role::with('permissions')->get(),
+            'permissions' => \Spatie\Permission\Models\Permission::all(),
         ]);
     }
 
@@ -71,5 +72,17 @@ class UserController extends Controller
 
         $user->delete();
         return back()->with('message', 'User deleted successfully');
+    }
+
+    public function updateRolePermissions(Request $request, Role $role)
+    {
+        $validated = $request->validate([
+            'permissions' => 'present|array',
+            'permissions.*' => 'string|exists:permissions,name',
+        ]);
+
+        $role->syncPermissions($validated['permissions']);
+
+        return back()->with('message', 'Permissions synced successfully');
     }
 }

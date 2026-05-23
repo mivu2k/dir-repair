@@ -29,9 +29,25 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return Inertia::render('Customers/Create');
+        $search = $request->query('search');
+
+        $customers = Customer::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            })
+            ->withCount('repairJobs')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        return Inertia::render('Customers/Create', [
+            'customers' => $customers,
+            'filters' => $request->only(['search']),
+        ]);
     }
 
     public function show(Customer $customer)
@@ -69,10 +85,25 @@ class CustomerController extends Controller
         return redirect()->route('customers.show', $customer)->with('message', 'Customer created successfully.');
     }
 
-    public function edit(Customer $customer)
+    public function edit(Request $request, Customer $customer)
     {
+        $search = $request->query('search');
+
+        $customers = Customer::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            })
+            ->withCount('repairJobs')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
         return Inertia::render('Customers/Edit', [
             'customer' => $customer,
+            'customers' => $customers,
+            'filters' => $request->only(['search']),
         ]);
     }
 

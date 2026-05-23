@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
         Route::patch('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
         Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+        Route::post('/admin/roles/{role}/permissions', [UserController::class, 'updateRolePermissions'])->name('admin.roles.permissions.update');
         
         Route::get('/admin/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('admin.settings');
         Route::post('/admin/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('admin.settings.update');
@@ -86,20 +87,30 @@ Route::middleware('auth')->group(function () {
     // Demo Issuances
     Route::middleware('role:admin,manager,sales,store,supervisor')->group(function () {
         Route::get('/demo-issuances', [\App\Http\Controllers\DemoIssuanceController::class, 'index'])->name('demo-issuances.index');
+        Route::get('/demo-issuances/create', [\App\Http\Controllers\DemoIssuanceController::class, 'create'])->name('demo-issuances.create');
+        Route::get('/demo-issuances/{demoIssuance}/edit', [\App\Http\Controllers\DemoIssuanceController::class, 'edit'])->name('demo-issuances.edit');
         Route::post('/demo-issuances', [\App\Http\Controllers\DemoIssuanceController::class, 'store'])->name('demo-issuances.store');
         Route::put('/demo-issuances/{demoIssuance}', [\App\Http\Controllers\DemoIssuanceController::class, 'update'])->name('demo-issuances.update');
         Route::delete('/demo-issuances/{demoIssuance}', [\App\Http\Controllers\DemoIssuanceController::class, 'destroy'])->name('demo-issuances.destroy');
         Route::post('/demo-issuances/{demoIssuance}/return', [\App\Http\Controllers\DemoIssuanceController::class, 'markReturned'])->name('demo-issuances.return');
         Route::get('/demo-issuances/{demoIssuance}/pdf/{variant?}', [\App\Http\Controllers\DemoIssuanceController::class, 'pdf'])->name('demo-issuances.pdf');
+        Route::get('/demo-issuances/{demoIssuance}', function ($id) {
+            return redirect()->route('demo-issuances.edit', $id);
+        })->name('demo-issuances.show');
     });
 
     // Gate Passes
     Route::middleware('role:admin,manager,store,supervisor')->group(function () {
         Route::get('/gate-passes', [\App\Http\Controllers\GatePassController::class, 'index'])->name('gate-passes.index');
+        Route::get('/gate-passes/create', [\App\Http\Controllers\GatePassController::class, 'create'])->name('gate-passes.create');
+        Route::get('/gate-passes/{gatePass}/edit', [\App\Http\Controllers\GatePassController::class, 'edit'])->name('gate-passes.edit');
         Route::post('/gate-passes', [\App\Http\Controllers\GatePassController::class, 'store'])->name('gate-passes.store');
         Route::put('/gate-passes/{gatePass}', [\App\Http\Controllers\GatePassController::class, 'update'])->name('gate-passes.update');
         Route::delete('/gate-passes/{gatePass}', [\App\Http\Controllers\GatePassController::class, 'destroy'])->name('gate-passes.destroy');
         Route::get('/gate-passes/{gatePass}/pdf/{variant?}', [\App\Http\Controllers\GatePassController::class, 'pdf'])->name('gate-passes.pdf');
+        Route::get('/gate-passes/{gatePass}', function ($id) {
+            return redirect()->route('gate-passes.edit', $id);
+        })->name('gate-passes.show');
     });
 
     // Financial & Analytical

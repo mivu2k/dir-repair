@@ -30,6 +30,49 @@ class GatePassController extends Controller
         ]);
     }
 
+    public function create(Request $request)
+    {
+        $search = $request->query('search');
+
+        $passes = GatePass::with('authorizedBy')
+            ->when($search, function ($query, $search) {
+                $query->where('pass_number', 'like', "%{$search}%")
+                    ->orWhere('person_name', 'like', "%{$search}%")
+                    ->orWhere('company_name', 'like', "%{$search}%")
+                    ->orWhere('items', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+            
+        return Inertia::render('GatePasses/Create', [
+            'passes' => $passes,
+            'filters' => $request->only(['search'])
+        ]);
+    }
+
+    public function edit(Request $request, GatePass $gatePass)
+    {
+        $search = $request->query('search');
+
+        $passes = GatePass::with('authorizedBy')
+            ->when($search, function ($query, $search) {
+                $query->where('pass_number', 'like', "%{$search}%")
+                    ->orWhere('person_name', 'like', "%{$search}%")
+                    ->orWhere('company_name', 'like', "%{$search}%")
+                    ->orWhere('items', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+            
+        return Inertia::render('GatePasses/Edit', [
+            'gatePass' => $gatePass,
+            'passes' => $passes,
+            'filters' => $request->only(['search'])
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -50,7 +93,7 @@ class GatePassController extends Controller
 
         GatePass::create($validated);
 
-        return redirect()->back()->with('success', 'Gate pass generated successfully.');
+        return redirect()->route('gate-passes.index')->with('success', 'Gate pass generated successfully.');
     }
 
     public function update(Request $request, GatePass $gatePass)
@@ -71,7 +114,7 @@ class GatePassController extends Controller
 
         $gatePass->update($validated);
 
-        return redirect()->back()->with('success', 'Gate pass updated successfully.');
+        return redirect()->route('gate-passes.index')->with('success', 'Gate pass updated successfully.');
     }
 
     public function destroy(Request $request, GatePass $gatePass)
@@ -79,7 +122,7 @@ class GatePassController extends Controller
         $this->checkDeletePermission($request);
 
         $gatePass->delete();
-        return redirect()->back()->with('success', 'Gate pass deleted successfully.');
+        return redirect()->route('gate-passes.index')->with('success', 'Gate pass deleted successfully.');
     }
 
     public function pdf(GatePass $gatePass, $variant = 'a4')

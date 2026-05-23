@@ -33,31 +33,35 @@ const formatCurrency = (amount) => {
 
     <AuthenticatedLayout>
         <div class="space-y-4">
-            <div class="flex items-center justify-between gap-4">
-                <div class="relative flex-1 max-w-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 select-none">
+                <div class="relative w-full sm:max-w-sm">
                     <input 
                         v-model="search" 
                         type="text" 
                         placeholder="Search quotations..." 
-                        class="input-field pl-8"
+                        class="input-field w-full"
+                        style="padding-left: 2.25rem !important;"
                     >
-                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
                 </div>
             </div>
             
             <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Quote #</th>
-                            <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Job #</th>
-                            <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
-                            <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
-                            <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                            <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Ops</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left min-w-[600px] sm:min-w-full">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Quote #</th>
+                                <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Job #</th>
+                                <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
+                                <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
+                                <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                                <th class="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Ops</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
                         <tr 
                             v-for="quote in quotations.data" 
                             :key="quote.id" 
@@ -77,6 +81,7 @@ const formatCurrency = (amount) => {
                         </tr>
                     </tbody>
                 </table>
+                </div>
                 
                 <div class="px-3 py-2 border-t border-slate-100 flex justify-between items-center bg-slate-50" v-if="quotations.links">
                     <span class="text-[9px] font-bold text-slate-400 uppercase">{{ quotations.total }} Financials</span>

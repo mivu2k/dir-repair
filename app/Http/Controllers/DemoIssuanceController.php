@@ -35,6 +35,57 @@ class DemoIssuanceController extends Controller
         ]);
     }
 
+    public function create(Request $request)
+    {
+        $search = $request->query('search');
+
+        $issuances = DemoIssuance::with(['customer', 'issuedBy', 'receivedBy'])
+            ->when($search, function ($query, $search) {
+                $query->where('issuance_number', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('items', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+            
+        $customers = Customer::orderBy('name')->get(['id', 'name', 'phone']);
+
+        return Inertia::render('DemoIssuances/Create', [
+            'issuances' => $issuances,
+            'customers' => $customers,
+            'filters' => $request->only(['search'])
+        ]);
+    }
+
+    public function edit(Request $request, DemoIssuance $demoIssuance)
+    {
+        $search = $request->query('search');
+
+        $issuances = DemoIssuance::with(['customer', 'issuedBy', 'receivedBy'])
+            ->when($search, function ($query, $search) {
+                $query->where('issuance_number', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('items', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+            
+        $customers = Customer::orderBy('name')->get(['id', 'name', 'phone']);
+
+        return Inertia::render('DemoIssuances/Edit', [
+            'demoIssuance' => $demoIssuance,
+            'issuances' => $issuances,
+            'customers' => $customers,
+            'filters' => $request->only(['search'])
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -56,7 +107,7 @@ class DemoIssuanceController extends Controller
 
         DemoIssuance::create($validated);
 
-        return redirect()->back()->with('success', 'Demo items issued successfully.');
+        return redirect()->route('demo-issuances.index')->with('success', 'Demo items issued successfully.');
     }
 
     public function update(Request $request, DemoIssuance $demoIssuance)
@@ -77,7 +128,7 @@ class DemoIssuanceController extends Controller
 
         $demoIssuance->update($validated);
 
-        return redirect()->back()->with('success', 'Demo issuance updated successfully.');
+        return redirect()->route('demo-issuances.index')->with('success', 'Demo issuance updated successfully.');
     }
 
     public function destroy(Request $request, DemoIssuance $demoIssuance)
@@ -85,7 +136,7 @@ class DemoIssuanceController extends Controller
         $this->checkDeletePermission($request);
 
         $demoIssuance->delete();
-        return redirect()->back()->with('success', 'Demo issuance deleted successfully.');
+        return redirect()->route('demo-issuances.index')->with('success', 'Demo issuance deleted successfully.');
     }
 
     public function markReturned(Request $request, DemoIssuance $demoIssuance)

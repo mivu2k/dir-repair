@@ -1,13 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
 import Modal from '@/Components/Modal.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
     issuances: Object,
@@ -15,19 +11,8 @@ const props = defineProps({
     filters: Object,
 });
 
-const isCreating = ref(false);
-const editingIssuance = ref(null);
 const returningItem = ref(null);
 const search = ref(props.filters.search || '');
-
-const form = useForm({
-    customer_id: '',
-    items: [{ name: '', serial: '', accessories: '' }],
-    expected_return_date: '',
-    notes: '',
-    reference_letter: '',
-    department: '',
-});
 
 const returnForm = useForm({
     notes: '',
@@ -39,50 +24,6 @@ watch(search, (value) => {
         replace: true
     });
 });
-
-const addItem = () => {
-    form.items.push({ name: '', serial: '', accessories: '' });
-};
-
-const removeItem = (index) => {
-    if (form.items.length > 1) {
-        form.items.splice(index, 1);
-    }
-};
-
-const submit = () => {
-    if (editingIssuance.value) {
-        form.put(route('demo-issuances.update', editingIssuance.value.id), {
-            onSuccess: () => {
-                editingIssuance.value = null;
-                form.reset();
-            },
-        });
-    } else {
-        form.post(route('demo-issuances.store'), {
-            onSuccess: () => {
-                isCreating.value = false;
-                form.reset();
-            },
-        });
-    }
-};
-
-const editIssuance = (issuance) => {
-    editingIssuance.value = issuance;
-    form.customer_id = issuance.customer_id;
-    form.items = JSON.parse(JSON.stringify(issuance.items));
-    form.expected_return_date = issuance.expected_return_date;
-    form.notes = issuance.notes;
-    form.reference_letter = issuance.reference_letter || '';
-    form.department = issuance.department || '';
-};
-
-const deleteIssuance = (id) => {
-    if (confirm('Are you sure you want to delete this issuance?')) {
-        router.delete(route('demo-issuances.destroy', id));
-    }
-};
 
 const submitReturn = () => {
     returnForm.post(route('demo-issuances.return', returningItem.value.id), {
@@ -103,162 +44,117 @@ const canDelete = () => {
     const roles = props.auth?.user?.roles || [];
     return roles.includes('admin') || roles.includes('manager');
 };
+
+const deleteIssuance = (id) => {
+    if (confirm('Are you sure you want to delete this issuance?')) {
+        router.delete(route('demo-issuances.destroy', id));
+    }
+};
 </script>
 
 <template>
-    <Head title="Demo Issuances" />
+    <Head title="Demo Goods" />
 
     <AuthenticatedLayout>
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
-                <h2 class="text-2xl font-black text-slate-900 tracking-tight uppercase">Demo Goods</h2>
-                <p class="text-sm text-slate-500 font-medium">Manage units issued to customers for trial.</p>
+                <h2 class="text-lg font-extrabold text-[#201f1e] mb-1">Demo Goods Matrix</h2>
+                <p class="text-xs text-[#605e5c] font-semibold">Manage and log operational equipment dispatched to clients for field trials.</p>
             </div>
-            <div class="flex gap-4">
-                <TextInput v-model="search" type="text" placeholder="Search Demo #, Client, Serial..." class="w-64 text-sm" />
-                <button @click="isCreating = true; editingIssuance = null; form.reset()" class="px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-bold shadow hover:bg-slate-800">
+            <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                <div class="relative flex-1 md:flex-initial">
+                    <input 
+                        v-model="search" 
+                        type="text" 
+                        placeholder="Search demo #, client, serial..." 
+                        class="input-field w-full md:w-64"
+                        style="padding-left: 2.25rem !important;"
+                    />
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                </div>
+                <Link 
+                    :href="route('demo-issuances.create')" 
+                    class="bg-[#0078d4] hover:bg-[#005a9e] text-white px-4 py-1.5 rounded-sm text-xs font-semibold shadow-sm transition-all text-center select-none whitespace-nowrap"
+                >
                     Issue Demo Items
-                </button>
+                </Link>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <!-- M365 Data Table Grid -->
+        <div class="bg-white border border-[#e1dfdd] rounded-sm overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 border-b border-slate-100 text-xs uppercase text-slate-500 font-black tracking-wider">
+                <table class="w-full text-left text-xs min-w-[700px] sm:min-w-full">
+                    <thead class="bg-slate-50 border-b border-[#e1dfdd] text-[#605e5c] uppercase font-bold tracking-wide">
                         <tr>
-                            <th class="px-6 py-4">ID / Customer</th>
-                            <th class="px-6 py-4">Items</th>
-                            <th class="px-6 py-4">Timeline</th>
-                            <th class="px-6 py-4 text-center">Status</th>
-                            <th class="px-6 py-4 text-right">Actions</th>
+                            <th class="px-4 py-3 select-none">ID / Customer</th>
+                            <th class="px-4 py-3 select-none">Items Description</th>
+                            <th class="px-4 py-3 select-none">Timeline Coordinates</th>
+                            <th class="px-4 py-3 text-center select-none">Status</th>
+                            <th class="px-4 py-3 text-right select-none">Operations</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-[#f3f2f1]">
                         <tr v-for="issuance in issuances.data" :key="issuance.id" class="hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4 align-top">
-                                <div class="font-bold text-slate-900">{{ issuance.issuance_number }}</div>
-                                <div class="text-slate-500">{{ issuance.customer.name }}</div>
-                                <div v-if="issuance.department" class="text-[11px] text-slate-400 font-medium">Dept: {{ issuance.department }}</div>
-                                <div v-if="issuance.reference_letter" class="text-[11px] text-slate-400 font-medium">Ref: {{ issuance.reference_letter }}</div>
+                            <td class="px-4 py-3">
+                                <div class="font-extrabold text-[#201f1e]">{{ issuance.issuance_number }}</div>
+                                <div class="font-bold text-[#605e5c] mt-0.5">{{ issuance.customer.name }}</div>
+                                <div v-if="issuance.department" class="text-[10px] text-slate-400 font-bold mt-1 uppercase">Dept: {{ issuance.department }}</div>
+                                <div v-if="issuance.reference_letter" class="text-[10px] text-slate-400 font-bold mt-0.5 uppercase">Ref: {{ issuance.reference_letter }}</div>
                             </td>
-                            <td class="px-6 py-4 align-top">
-                                <div v-for="(item, idx) in issuance.items" :key="idx" class="mb-2 last:mb-0 border-l-2 border-slate-200 pl-2">
-                                    <div class="font-bold text-slate-900">{{ item.name }}</div>
-                                    <div class="text-[10px] text-slate-500 uppercase font-bold" v-if="item.serial">SN: {{ item.serial }}</div>
+                            <td class="px-4 py-3">
+                                <div v-for="(item, idx) in issuance.items" :key="idx" class="mb-2 last:mb-0 border-l-2 border-[#dc2626] pl-2">
+                                    <div class="font-bold text-[#323130]">{{ item.name }}</div>
+                                    <div class="text-[9px] text-[#605e5c] uppercase font-bold mt-0.5" v-if="item.serial">SN: {{ item.serial }}</div>
+                                    <div class="text-[9px] text-slate-400 font-medium" v-if="item.accessories">Accs: {{ item.accessories }}</div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 align-top">
-                                <div class="text-xs text-slate-500">Issued: {{ new Date(issuance.issued_at).toLocaleDateString() }}</div>
-                                <div class="text-xs font-bold text-slate-700" v-if="issuance.expected_return_date">Due: {{ new Date(issuance.expected_return_date).toLocaleDateString() }}</div>
+                            <td class="px-4 py-3">
+                                <div class="text-slate-500 font-semibold">Issued: {{ new Date(issuance.issued_at).toLocaleDateString() }}</div>
+                                <div class="text-[#323130] font-bold mt-0.5" v-if="issuance.expected_return_date">Due: {{ new Date(issuance.expected_return_date).toLocaleDateString() }}</div>
                             </td>
-                            <td class="px-6 py-4 align-top text-center">
+                            <td class="px-4 py-3 text-center">
                                 <StatusBadge :status="issuance.status" />
                             </td>
-                            <td class="px-6 py-4 text-right align-top space-x-3">
-                                <div class="flex flex-col items-end gap-2">
-                                    <div class="flex gap-2">
-                                        <a :href="route('demo-issuances.pdf', { demoIssuance: issuance.id, variant: 'a4' })" target="_blank" class="text-slate-500 hover:text-slate-900 font-bold text-[10px] uppercase border px-2 py-1 rounded">A4</a>
-                                        <a :href="route('demo-issuances.pdf', { demoIssuance: issuance.id, variant: 'pos' })" target="_blank" class="text-slate-500 hover:text-slate-900 font-bold text-[10px] uppercase border px-2 py-1 rounded">POS</a>
+                            <td class="px-4 py-3 text-right">
+                                <div class="flex flex-col items-end gap-2.5">
+                                    <div class="flex gap-1.5 select-none">
+                                        <a :href="route('demo-issuances.pdf', { demoIssuance: issuance.id, variant: 'a4' })" target="_blank" class="text-slate-500 hover:text-[#0078d4] font-bold text-[9px] uppercase border border-[#e1dfdd] px-2 py-0.5 bg-white hover:bg-slate-50 rounded-sm">A4 Invoice</a>
+                                        <a :href="route('demo-issuances.pdf', { demoIssuance: issuance.id, variant: 'pos' })" target="_blank" class="text-slate-500 hover:text-[#0078d4] font-bold text-[9px] uppercase border border-[#e1dfdd] px-2 py-0.5 bg-white hover:bg-slate-50 rounded-sm">POS Slip</a>
                                     </div>
                                     <div class="flex gap-4 items-center">
-                                        <button v-if="issuance.status === 'issued'" @click="returningItem = issuance" class="text-emerald-600 hover:text-emerald-900 font-bold text-xs uppercase">Return</button>
-                                        <button v-if="canEdit(issuance)" @click="editIssuance(issuance)" class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase">Edit</button>
-                                        <button v-if="canDelete()" @click="deleteIssuance(issuance.id)" class="text-red-400 hover:text-red-600 font-bold text-xs uppercase">Del</button>
+                                        <button v-if="issuance.status === 'issued'" @click="returningItem = issuance" class="text-emerald-600 hover:text-emerald-800 font-extrabold text-[10px] uppercase">Mark Return</button>
+                                        <Link v-if="canEdit(issuance)" :href="route('demo-issuances.edit', issuance.id)" class="text-[#0078d4] hover:text-[#005a9e] font-extrabold text-[10px] uppercase">Edit</Link>
+                                        <button v-if="canDelete()" @click="deleteIssuance(issuance.id)" class="text-red-500 hover:text-red-700 font-extrabold text-[10px] uppercase">Delete</button>
                                     </div>
                                 </div>
                             </td>
                         </tr>
                         <tr v-if="issuances.data.length === 0">
-                            <td colspan="5" class="px-6 py-8 text-center text-slate-500 font-medium italic">No matching records found.</td>
+                            <td colspan="5" class="px-4 py-12 text-center text-[#a19f9d] font-bold italic">No matching records found.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Issue/Edit Modal -->
-        <Modal :show="isCreating || !!editingIssuance" @close="isCreating = false; editingIssuance = null; form.reset()" max-width="2xl">
-            <div class="p-6">
-                <h2 class="text-lg font-black text-slate-900 mb-6 uppercase tracking-wider">{{ editingIssuance ? 'Edit' : 'Issue' }} Demo Items</h2>
-                <form @submit.prevent="submit" class="space-y-6">
-                    <div>
-                        <InputLabel value="Customer" />
-                        <select v-model="form.customer_id" class="w-full border-slate-200 rounded-md text-sm focus:border-slate-500 focus:ring-slate-500 shadow-sm" required>
-                            <option value="">Select a customer...</option>
-                            <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }} ({{ c.phone }})</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Items Detail</h3>
-                            <button type="button" @click="addItem" class="text-[10px] font-black uppercase text-indigo-600 hover:text-indigo-800 underline">Add Another</button>
-                        </div>
-                        
-                        <div v-for="(item, index) in form.items" :key="index" class="p-4 bg-slate-50 rounded-lg border border-slate-100 relative group">
-                            <button v-if="form.items.length > 1" type="button" @click="removeItem(index)" class="absolute top-2 right-2 text-slate-400 hover:text-red-500">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-2">
-                                    <InputLabel value="Item Name" />
-                                    <TextInput v-model="item.name" type="text" class="w-full text-xs" required />
-                                </div>
-                                <div>
-                                    <InputLabel value="Serial Number" />
-                                    <TextInput v-model="item.serial" type="text" class="w-full text-xs" />
-                                </div>
-                                <div>
-                                    <InputLabel value="Accessories" />
-                                    <TextInput v-model="item.accessories" type="text" class="w-full text-xs" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 border-t pt-6">
-                        <div>
-                            <InputLabel value="Reference Letter / Document #" />
-                            <TextInput v-model="form.reference_letter" type="text" class="w-full" />
-                        </div>
-                        <div>
-                            <InputLabel value="Department / Section" />
-                            <TextInput v-model="form.department" type="text" class="w-full" />
-                        </div>
-                        <div>
-                            <InputLabel value="Expected Return Date" />
-                            <TextInput v-model="form.expected_return_date" type="date" class="w-full" />
-                        </div>
-                        <div>
-                            <InputLabel value="General Notes" />
-                            <TextInput v-model="form.notes" type="text" class="w-full" />
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-end gap-3">
-                        <SecondaryButton @click="isCreating = false; editingIssuance = null; form.reset()">Cancel</SecondaryButton>
-                        <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">Save Record</PrimaryButton>
-                    </div>
-                </form>
-            </div>
-        </Modal>
-
-        <!-- Return Modal -->
+        <!-- Return Modal (Optimized without blur) -->
         <Modal :show="!!returningItem" @close="returningItem = null">
-            <div class="p-6">
-                <h2 class="text-lg font-black text-slate-900 mb-6 uppercase tracking-wider">Confirm Return</h2>
-                <div class="mb-4 text-sm text-slate-600 bg-slate-50 p-4 rounded border border-slate-100">
-                    Marking items from <span class="font-bold">{{ returningItem?.customer?.name }}</span> as returned.
+            <div class="p-6 select-none">
+                <h2 class="text-base font-extrabold text-[#201f1e] mb-4 uppercase">Confirm Return</h2>
+                <div class="mb-4 text-xs font-bold text-emerald-800 bg-emerald-50 p-4 rounded border border-emerald-200">
+                    Marking trial items from <span class="font-extrabold underline">{{ returningItem?.customer?.name }}</span> as fully returned.
                 </div>
                 <form @submit.prevent="submitReturn" class="space-y-4">
                     <div>
-                        <InputLabel value="Return Notes" />
-                        <textarea v-model="returnForm.notes" class="w-full border-slate-200 rounded-md text-sm focus:border-slate-500 focus:ring-slate-500 shadow-sm" rows="3"></textarea>
+                        <label class="block text-xs font-semibold text-[#323130] mb-1.5">Return notes / remarks</label>
+                        <textarea v-model="returnForm.notes" class="input-field" rows="3" placeholder="Enter return remarks..."></textarea>
                     </div>
-                    <div class="mt-6 flex justify-end gap-3">
-                        <SecondaryButton @click="returningItem = null">Cancel</SecondaryButton>
-                        <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-md text-sm font-bold shadow hover:bg-emerald-700">Confirm Return</button>
+                    <div class="mt-6 flex justify-end gap-2.5">
+                        <button type="button" @click="returningItem = null" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="px-5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-sm text-xs font-bold shadow-sm transition-all">Confirm Return</button>
                     </div>
                 </form>
             </div>

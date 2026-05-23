@@ -24,6 +24,41 @@ class PartController extends Controller
         ]);
     }
 
+    public function create(Request $request)
+    {
+        $parts = Part::orderBy('name')
+            ->when($request->search, function($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('sku', 'like', "%{$search}%")
+                      ->orWhere('brand', 'like', "%{$search}%")
+                      ->orWhere('model', 'like', "%{$search}%");
+            })
+            ->get();
+
+        return Inertia::render('Inventory/Create', [
+            'parts' => $parts,
+            'filters' => $request->only(['search']),
+        ]);
+    }
+
+    public function edit(Request $request, Part $part)
+    {
+        $parts = Part::orderBy('name')
+            ->when($request->search, function($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('sku', 'like', "%{$search}%")
+                      ->orWhere('brand', 'like', "%{$search}%")
+                      ->orWhere('model', 'like', "%{$search}%");
+            })
+            ->get();
+
+        return Inertia::render('Inventory/Edit', [
+            'part' => $part,
+            'parts' => $parts,
+            'filters' => $request->only(['search']),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -38,7 +73,7 @@ class PartController extends Controller
         $validated['stock_quantity'] = $validated['stock_quantity'] ?? 0;
         Part::create($validated);
 
-        return redirect()->back()->with('success', 'Part added to inventory.');
+        return redirect()->route('parts.index')->with('success', 'Part added to inventory.');
     }
 
     public function update(Request $request, Part $part)
@@ -54,7 +89,7 @@ class PartController extends Controller
 
         $part->update($validated);
 
-        return redirect()->back()->with('success', 'Part updated.');
+        return redirect()->route('parts.index')->with('success', 'Part updated.');
     }
 
     public function destroy(Request $request, Part $part)
@@ -62,6 +97,6 @@ class PartController extends Controller
         $this->checkDeletePermission($request);
 
         $part->delete();
-        return redirect()->back()->with('success', 'Part removed.');
+        return redirect()->route('parts.index')->with('success', 'Part removed.');
     }
 }

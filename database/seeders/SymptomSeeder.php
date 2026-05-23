@@ -14,7 +14,7 @@ class SymptomSeeder extends Seeder {
         ];
         foreach ($categories as $cat => $syms) {
             foreach ($syms as $s) {
-                Symptom::create(['name' => $s, 'category' => $cat]);
+                Symptom::firstOrCreate(['name' => $s], ['category' => $cat]);
             }
         }
     }
