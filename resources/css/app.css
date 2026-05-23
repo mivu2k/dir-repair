@@ -1,18 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-    /* Tailwind Theme RGB variables (for tailwind.config.js mapping) */
-    --primary: 220 38 38;          /* #dc2626 (Corporate Red) */
-    --accent: 185 28 28;           /* #b91c1c (Hover Red) */
-    --surface: 255 255 255;        /* #ffffff (Pure White) */
-    --background: 248 250 252;     /* #f8fafc (Sleek slate-50) */
-    --border: 241 245 249;         /* #f1f5f9 (Slate-100 Border) */
+    /* Microsoft 365 style color palette mapping corporate red */
+    --ms-primary: 220 38 38;       /* #dc2626 (Corporate Red) */
+    --ms-blue: #0078d4;
+    --ms-sidebar: #f3f2f1;         /* Classic M365 Light Gray Sidebar */
+    --ms-border: #e1dfdd;          /* M365 light grey borders */
+    --ms-text-dark: #201f1e;       /* M365 high density text */
+    --ms-canvas: #f3f2f1;          /* M365 canvas backplate */
 
-    /* Direct CSS variables for explicit custom class mappings */
+    /* Core Variables */
     --theme-primary: #dc2626;
     --theme-primary-hover: #b91c1c;
     --theme-primary-glow: rgba(220, 38, 38, 0.15);
@@ -20,56 +21,74 @@
 }
 
 body {
-    @apply antialiased font-sans bg-[var(--background)] text-slate-900;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply antialiased text-[#323130] bg-[#fafafa];
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
 }
 
+/* Custom classes for standard table grids mapping Microsoft 365 data grid */
 @layer components {
-    .input-field {
-        @apply w-full bg-white border border-slate-200 rounded px-2.5 py-2 text-[11px] font-bold text-slate-900 
-               focus:ring-2 focus:ring-[var(--theme-primary-glow)] focus:border-[var(--theme-primary)] transition-all outline-none 
-               placeholder:text-slate-300 placeholder:font-normal;
+    .m365-table {
+        @apply w-full border-collapse text-xs text-left bg-white;
+    }
+    
+    .m365-table thead th {
+        @apply font-semibold text-[#605e5c] py-2 px-3 border-b border-[#e1dfdd] select-none hover:bg-slate-50;
+    }
+    
+    .m365-table tbody tr {
+        @apply border-b border-[#f3f2f1] hover:bg-[#f3f2f1]/50 transition-colors duration-100;
+    }
+    
+    .m365-table tbody td {
+        @apply py-2.5 px-3 text-[#323130] font-medium align-middle;
     }
 
+    /* M365 flat input boxes */
+    .input-field {
+        @apply w-full bg-white border border-[#a19f9d] rounded-sm px-3 py-1.5 text-xs text-[#323130]
+               focus:border-[var(--theme-primary)] focus:ring-1 focus:ring-[var(--theme-primary)] transition-all outline-none 
+               placeholder-[#a19f9d];
+    }
+
+    /* M365 action bar buttons */
     .btn-primary {
-        @apply bg-[var(--theme-primary)] hover:bg-[var(--theme-primary-hover)] text-white px-3.5 py-2 rounded text-[10px] font-black uppercase tracking-widest 
-               shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2;
+        @apply bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-1.5 rounded-sm text-xs font-semibold 
+               transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98];
     }
 
     .btn-secondary {
-        @apply bg-white border border-slate-200 hover:border-[var(--theme-primary)] text-slate-600 hover:text-[var(--theme-primary)] px-3.5 py-2 rounded 
-               text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2;
-    }
-
-    /* Horizontal scroll for mobile tables */
-    .overflow-x-auto {
-        -webkit-overflow-scrolling: touch;
+        @apply bg-white border border-[#8a8886] hover:bg-[#f3f2f1] text-[#323130] px-4 py-1.5 rounded-sm 
+               text-xs font-semibold transition-all flex items-center justify-center gap-1.5;
     }
 }
 
-/* Custom Scrollbar for High Density */
+/* Microsoft 365 custom scrollbar styling */
 ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 6px;
+    height: 6px;
 }
 ::-webkit-scrollbar-track {
-    @apply bg-slate-50;
+    background: #f3f2f1;
 }
 ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 rounded-full hover:bg-slate-400;
+    background: #c8c6c4;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a19f9d;
 }
 
-/* Animations */
+/* Slide up animation for main content slot */
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-slide-up {
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
 }
 
-/* Global focus intercepts to map default Inertia/Tailwind rings to corporate red */
+/* Overriding default Inertia/Laravel focus overlays to use pure corporate red */
 [class*="focus:ring-indigo-500"]:focus {
     --tw-ring-color: var(--theme-primary) !important;
     border-color: var(--theme-primary) !important;
@@ -79,15 +98,4 @@ body {
 }
 [class*="text-indigo-600"] {
     color: var(--theme-primary) !important;
-}
-
-/* Mobile Adjustments */
-@media (max-width: 640px) {
-    .sidebar-collapsed {
-        @apply translate-x-[-100%];
-    }
-    
-    .main-content {
-        @apply ml-0 !important;
-    }
 }
