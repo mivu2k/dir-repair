@@ -35,9 +35,16 @@ const deleteQuotation = () => {
     }
 };
 
-const role = computed(() => usePage().props.auth.user?.roles?.[0]?.name || usePage().props.auth.user?.role || 'staff');
+const user = computed(() => usePage().props.auth.user);
+const role = computed(() => user.value?.roles?.[0]?.name || user.value?.role || 'staff');
 const isAdmin = computed(() => role.value === 'admin');
-const canDelete = computed(() => isAdmin.value);
+const permissions = computed(() => user.value?.permissions || []);
+const hasPermission = (permission) => isAdmin.value || permissions.value.includes(permission);
+
+const canDelete = computed(() => hasPermission('delete quotations'));
+const canEdit = computed(() => hasPermission('edit quotations'));
+const canApprove = computed(() => hasPermission('approve quotation'));
+const canGenerateInvoice = computed(() => hasPermission('create sales-orders'));
 </script>
 
 <template>
@@ -142,12 +149,12 @@ const canDelete = computed(() => isAdmin.value);
             <!-- Sticky Workflow Bar -->
             <div class="bg-white border border-slate-200 rounded-lg p-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
                 <div class="flex gap-2">
-                    <button @click="updateStatus('pending')" :class="['btn-secondary py-1.5', quotation.status === 'pending' ? 'bg-slate-900 text-white' : '']">Set Pending</button>
-                    <button @click="updateStatus('approved')" :class="['btn-secondary py-1.5 border-emerald-200 text-emerald-600', quotation.status === 'approved' ? 'bg-emerald-600 text-white' : '']">Approve Scenario</button>
-                    <button @click="updateStatus('sent')" :class="['btn-secondary py-1.5 border-blue-200 text-blue-600', quotation.status === 'sent' ? 'bg-blue-600 text-white' : '']">Mark Sent</button>
+                    <button :disabled="!canEdit" @click="updateStatus('pending')" :class="['btn-secondary py-1.5 disabled:opacity-50 disabled:cursor-not-allowed', quotation.status === 'pending' ? 'bg-slate-900 text-white' : '']">Set Pending</button>
+                    <button :disabled="!canApprove" @click="updateStatus('approved')" :class="['btn-secondary py-1.5 border-emerald-200 text-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed', quotation.status === 'approved' ? 'bg-emerald-600 text-white' : '']">Approve Scenario</button>
+                    <button :disabled="!canEdit" @click="updateStatus('sent')" :class="['btn-secondary py-1.5 border-blue-200 text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed', quotation.status === 'sent' ? 'bg-blue-600 text-white' : '']">Mark Sent</button>
                 </div>
                 <div class="flex gap-2">
-                    <button v-if="quotation.status === 'approved'" @click="generateInvoice" :disabled="invoiceForm.processing" class="btn-primary py-1.5 px-6">Generate Invoice</button>
+                    <button v-if="quotation.status === 'approved' && canGenerateInvoice" @click="generateInvoice" :disabled="invoiceForm.processing" class="btn-primary py-1.5 px-6">Generate Invoice</button>
                     <Link :href="route('quotations.index')" class="btn-secondary py-1.5">Close Matrix</Link>
                 </div>
             </div>

@@ -9,7 +9,27 @@ abstract class Controller
     protected function checkDeletePermission(Request $request)
     {
         $user = $request->user();
-        if (!$user || !$user->hasAnyRole(['admin', 'manager'])) {
+        if (!$user) {
+            abort(403, 'Unauthorized.');
+        }
+
+        $routeName = $request->route() ? $request->route()->getName() : null;
+        if ($routeName) {
+            $parts = explode('.', $routeName);
+            $module = $parts[0] ?? '';
+            if ($module) {
+                $permission = "delete {$module}";
+                try {
+                    if ($user->hasPermissionTo($permission)) {
+                        return;
+                    }
+                } catch (\Exception $e) {
+                    // Fallback on error
+                }
+            }
+        }
+
+        if (!$user->hasAnyRole(['admin', 'manager']) && $user->role !== 'admin' && $user->role !== 'manager') {
             abort(403, 'Only Admins and Managers can delete records.');
         }
     }
@@ -22,7 +42,7 @@ abstract class Controller
         }
         
         // Admin and Manager can always edit/update
-        if ($user->hasAnyRole(['admin', 'manager'])) {
+        if ($user->hasAnyRole(['admin', 'manager']) || $user->role === 'admin' || $user->role === 'manager') {
             return;
         }
 

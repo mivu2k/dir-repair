@@ -10,9 +10,12 @@ const props = defineProps({
 
 const search = ref(props.filters.search || '');
 
-const role = computed(() => usePage().props.auth.user?.roles?.[0]?.name || usePage().props.auth.user?.role || 'staff');
+const user = computed(() => usePage().props.auth.user);
+const role = computed(() => user.value?.roles?.[0]?.name || user.value?.role || 'staff');
 const isAdmin = computed(() => role.value === 'admin');
-const canDelete = computed(() => isAdmin.value);
+const permissions = computed(() => user.value?.permissions || []);
+const hasPermission = (permission) => isAdmin.value || permissions.value.includes(permission);
+const canDelete = computed(() => hasPermission('delete parts'));
 
 const deletePart = (id) => {
     if (confirm('Remove this part?')) {
@@ -57,6 +60,7 @@ const formatCurrency = (amount) => {
                     </span>
                 </div>
                 <Link 
+                    v-if="hasPermission('create parts')"
                     :href="route('parts.create')"
                     class="bg-[#0078d4] hover:bg-[#005a9e] text-white px-4 py-1.5 rounded-sm text-xs font-semibold shadow-sm transition-all text-center select-none"
                 >

@@ -22,5 +22,10 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Support\Facades\Schema::defaultStringLength(191);
         Vite::prefetch(concurrency: 3);
+
+        // Implicitly grant "admin" role all permissions
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            return $user->hasRole('admin') || $user->role === 'admin' ? true : null;
+        });
     }
 }

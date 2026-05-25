@@ -20,12 +20,17 @@ const statusForm = useForm({
 
 const isEditing = ref(false);
 
-const role = computed(() => usePage().props.auth.user?.roles?.[0]?.name || usePage().props.auth.user?.role || 'staff');
+const user = computed(() => usePage().props.auth.user);
+const role = computed(() => user.value?.roles?.[0]?.name || user.value?.role || 'staff');
 const isAdmin = computed(() => role.value === 'admin');
 const isManager = computed(() => role.value === 'manager');
 const isTechnician = computed(() => role.value === 'technician');
-const canModify = computed(() => isAdmin.value || isManager.value);
-const canDelete = computed(() => isAdmin.value);
+
+const permissions = computed(() => user.value?.permissions || []);
+const hasPermission = (permission) => isAdmin.value || permissions.value.includes(permission);
+
+const canModify = computed(() => hasPermission('edit intakes'));
+const canDelete = computed(() => hasPermission('delete intakes'));
 
 const updateIntake = () => {
     intakeForm.patch(route('intakes.update', props.intake.id), {
@@ -119,7 +124,7 @@ const updateBulkStatus = () => {
             </div>
 
             <!-- Bulk State Control -->
-            <div class="bg-slate-900 rounded-lg p-4 border border-slate-800 shadow-lg">
+            <div v-if="canModify" class="bg-slate-900 rounded-lg p-4 border border-slate-800 shadow-lg">
                 <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Batch Lifecycle Sync</h3>
                 <form @submit.prevent="updateBulkStatus" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div class="space-y-1">

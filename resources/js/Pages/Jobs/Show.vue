@@ -131,13 +131,18 @@ const updateStatus = () => {
     });
 };
 
-const role = computed(() => usePage().props.auth.user?.roles?.[0]?.name || usePage().props.auth.user?.role || 'staff');
+const user = computed(() => usePage().props.auth.user);
+const role = computed(() => user.value?.roles?.[0]?.name || user.value?.role || 'staff');
 const isAdmin = computed(() => role.value === 'admin');
 const isManager = computed(() => role.value === 'manager');
 const isTechnician = computed(() => role.value === 'technician');
-const canModify = computed(() => isAdmin.value || isManager.value);
-const canDelete = computed(() => isAdmin.value);
-const canManageFinancials = computed(() => isAdmin.value || isManager.value);
+
+const permissions = computed(() => user.value?.permissions || []);
+const hasPermission = (permission) => isAdmin.value || permissions.value.includes(permission);
+
+const canModify = computed(() => hasPermission('edit jobs'));
+const canDelete = computed(() => hasPermission('delete jobs'));
+const canManageFinancials = computed(() => hasPermission('view financial data'));
 </script>
 
 <template>
@@ -237,7 +242,7 @@ const canManageFinancials = computed(() => isAdmin.value || isManager.value);
                             </div>
 
                             <!-- Integrated Diagnosis Creation Form -->
-                            <form @submit.prevent="submitDiagnosis" class="mt-6 pt-6 border-t-2 border-dashed border-slate-100 space-y-4">
+                            <form v-if="hasPermission('add diagnosis')" @submit.prevent="submitDiagnosis" class="mt-6 pt-6 border-t-2 border-dashed border-slate-100 space-y-4">
                                 <h4 class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Append New Findings</h4>
                                 <div class="space-y-1">
                                     <textarea v-model="diagnosisForm.findings" rows="2" class="input-field text-[11px]" placeholder="Enter specialist observations and diagnostic results..." required></textarea>
@@ -301,17 +306,20 @@ const canManageFinancials = computed(() => isAdmin.value || isManager.value);
                     <!-- Lifecycle State -->
                     <div class="bg-slate-900 text-white rounded-lg p-4 shadow-lg border border-slate-800">
                         <h3 class="text-[9px] font-black uppercase tracking-[0.2em] mb-4 text-slate-500">Operational State</h3>
-                        <form @submit.prevent="updateStatus" class="space-y-3">
+                        <form v-if="hasPermission('update job status')" @submit.prevent="updateStatus" class="space-y-3">
                             <select v-model="statusForm.status" class="w-full bg-slate-800 border-slate-700 rounded px-2.5 py-2 text-[11px] font-black text-white focus:ring-blue-500 capitalize outline-none transition-all">
                                 <option v-for="s in ['received', 'diagnosing', 'waiting_approval', 'in_progress', 'completed', 'delivered', 'cancelled']" :key="s" :value="s">{{ s.replace('_', ' ') }}</option>
                             </select>
                             <textarea v-model="statusForm.note" rows="2" class="w-full bg-slate-800 border-slate-700 rounded px-2.5 py-2 text-[11px] text-white placeholder:text-slate-600 outline-none transition-all" placeholder="Internal state notes..."></textarea>
                             <button type="submit" :disabled="statusForm.processing" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">Update Lifecycle</button>
                         </form>
+                        <div v-else class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center py-2">
+                            Viewing State Only
+                        </div>
                     </div>
 
                     <!-- Specialist Node -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+                    <div v-if="hasPermission('edit jobs')" class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                         <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">Assigned Specialist</h3>
                         <form @submit.prevent="assignTech" class="flex gap-2">
                             <select v-model="assignForm.technician_id" class="input-field py-1.5 text-[11px] font-bold">

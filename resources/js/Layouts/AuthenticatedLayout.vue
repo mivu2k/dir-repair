@@ -58,13 +58,16 @@ const isSales = computed(() => role.value === 'sales');
 const isAccountant = computed(() => role.value === 'accountant');
 const isStore = computed(() => role.value === 'store');
 
-const canAccessFinancials = computed(() => ['admin', 'manager', 'accountant', 'supervisor'].includes(role.value));
-const canAccessIntakes = computed(() => ['admin', 'manager', 'sales', 'technician', 'supervisor'].includes(role.value));
-const canAccessJobs = computed(() => ['admin', 'manager', 'store', 'technician', 'supervisor'].includes(role.value));
-const canAccessInventory = computed(() => ['admin', 'manager', 'store', 'supervisor'].includes(role.value));
-const canAccessCustomers = computed(() => ['admin', 'manager', 'sales', 'accountant', 'store', 'technician', 'supervisor'].includes(role.value));
-const canAccessDemo = computed(() => ['admin', 'manager', 'sales', 'store', 'supervisor'].includes(role.value));
-const canAccessGatePass = computed(() => ['admin', 'manager', 'store', 'supervisor'].includes(role.value));
+const permissions = computed(() => user?.permissions || []);
+const hasPermission = (permission) => isAdmin.value || permissions.value.includes(permission);
+
+const canAccessFinancials = computed(() => hasPermission('view financial data'));
+const canAccessIntakes = computed(() => hasPermission('view intakes'));
+const canAccessJobs = computed(() => hasPermission('view jobs'));
+const canAccessInventory = computed(() => hasPermission('view parts'));
+const canAccessCustomers = computed(() => hasPermission('view customers'));
+const canAccessDemo = computed(() => hasPermission('view demo-issuances'));
+const canAccessGatePass = computed(() => hasPermission('view gate-passes'));
 
 const handleResize = () => {
     const wasMobile = isMobile.value;
